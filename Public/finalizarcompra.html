@@ -7,24 +7,19 @@
   <link rel="stylesheet" href="css/finalizarcompra.css">
 </head>
 <body>
-  <!-- Header -->
   <header class="main-header">
     <a href="index.html" class="logo">AVS</a>
   </header>
 
-  <!-- Contenedor principal -->
   <main class="checkout-container">
-    <!-- Formulario y pago (IZQUIERDA) -->
     <section class="form-section">
       <h2>Entrega</h2>
 
-      <!-- Botones de selección: Recolectar / Envío -->
       <div class="delivery-buttons">
         <button type="button" class="delivery-btn active" data-type="pickup">Recolectar</button>
         <button type="button" class="delivery-btn" data-type="shipping">Envío a domicilio</button>
       </div>
 
-      <!-- Formulario para RECOGER -->
       <div id="pickup-form" class="delivery-form">
         <h3>Datos para recoger</h3>
         <div class="form-row">
@@ -34,7 +29,6 @@
         <input id="telefono" type="text" placeholder="Teléfono" required>
       </div>
 
-      <!-- Formulario para ENVIAR -->
       <div id="shipping-form" class="delivery-form hidden">
         <h3>Datos de envío</h3>
         <select>
@@ -54,7 +48,6 @@
         <input id="telefono-envio" type="text" placeholder="Teléfono" required>
       </div>
 
-      <!-- Pago -->
       <section class="payment-section">
         <h2>Pago</h2>
         <p>Sinpe Móvil o Transferencia</p>
@@ -63,13 +56,11 @@
         </p>
       </section>
 
-      <!-- Botón Finalizar -->
       <div class="btn-wrapper">
         <button id="finalizar-pedido">Finalizar Pedido</button>
       </div>
     </section>
 
-    <!-- Resumen del pedido (DERECHA) -->
     <aside class="summary-section">
       <h2>Resumen del pedido</h2>
       <div id="order-summary"></div>
@@ -77,7 +68,6 @@
     </aside>
   </main>
 
-  <!-- Popup éxito -->
   <div id="success-popup" class="popup">
     <div class="popup-content">
       <span class="close" onclick="closePopup()">&times;</span>
@@ -87,7 +77,6 @@
   </div>
 
   <script>
-    // ====== Manejo de botones de delivery ======
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
     const pickupForm = document.getElementById('pickup-form');
     const shippingForm = document.getElementById('shipping-form');
@@ -111,7 +100,6 @@
       window.location.href = "index.html";
     }
 
-    // ====== Manejo de carrito ======
     function getCart() {
       const directBuy = JSON.parse(localStorage.getItem("directBuy"));
       if (directBuy) return directBuy;
@@ -149,7 +137,6 @@
 
     document.addEventListener("DOMContentLoaded", renderOrderSummary);
 
-    // ====== Finalizar pedido ======
     document.getElementById("finalizar-pedido").addEventListener("click", async () => {
       const cart = getCart();
       if (cart.length === 0) return;
@@ -173,7 +160,6 @@
       const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
 
       try {
-        // Guardar pedido (backend actualiza productos automáticamente)
         const response = await fetch('/api/pedidos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -182,7 +168,6 @@
 
         if (!response.ok) throw new Error("Error al guardar el pedido");
 
-        // Limpiar carrito y mostrar popup
         localStorage.removeItem("cart");
         localStorage.removeItem("directBuy");
         document.getElementById("success-popup").style.display = "flex";

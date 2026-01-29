@@ -110,7 +110,7 @@
     container.innerHTML = '';
 
     try {
-      const res = await fetch('http://localhost:3000/api/productos');
+      const res = await fetch('https://avs-app.onrender.com/api/productos');
       let productos = await res.json();
 
       // Mezclar aleatoriamente los productos
@@ -123,7 +123,6 @@
         const card = document.createElement('div');
         card.className = 'product-card';
 
-        // Usar la primera imagen del array
         const imgSrc = prod.imagenes[0].startsWith('/') ? prod.imagenes[0].slice(1) : prod.imagenes[0];
 
         card.innerHTML = `
@@ -131,9 +130,8 @@
           <h3>${prod.nombre}</h3>
         `;
 
-        // Toda la tarjeta clicable
         card.addEventListener('click', () => {
-          window.location.href = `producto.html?id=${prod._id}`; // 🔹 usamos _id del backend
+          window.location.href = `producto.html?id=${prod.id}`;
         });
 
         container.appendChild(card);
@@ -158,11 +156,9 @@
       return;
     }
 
-    // Guardamos también el total en localStorage
     const total = document.getElementById("cart-total").textContent;
     localStorage.setItem("cartTotal", total);
 
-    // Redirigir a la nueva pantalla de finalizar compra
     window.location.href = "finalizarcompra.html";
   });
 </script>

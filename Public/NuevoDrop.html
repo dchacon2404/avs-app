@@ -48,7 +48,7 @@ async function mostrarProductos() {
   container.innerHTML = '';
 
   try {
-    const res = await fetch('http://localhost:3000/api/productos');
+    const res = await fetch('/api/productos');
     const productos = await res.json();
 
     productos.forEach(prod => {
@@ -69,7 +69,7 @@ async function mostrarProductos() {
         </a>
       `;
 
-      if(prod.estado === 'Vendido'){
+      if (prod.estado === 'Vendido') {
         card.style.opacity = '0.6';
       }
 

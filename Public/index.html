@@ -69,7 +69,7 @@ async function cargarPrendas() {
   container.innerHTML = '';
 
   try {
-    const res = await fetch('http://localhost:3000/api/productos');
+    const res = await fetch('https://avs-app.onrender.com/api/productos');
     let productos = await res.json();
 
     // Mezclar aleatoriamente los productos
@@ -82,16 +82,13 @@ async function cargarPrendas() {
       const card = document.createElement('div');
       card.className = 'product-card';
 
-      // Usar la primera imagen del array
       const imgSrc = prod.imagenes[0].startsWith('/') ? prod.imagenes[0].slice(1) : prod.imagenes[0];
 
-      // Hacemos que toda la tarjeta sea clicable usando onclick
       card.innerHTML = `
         <img src="${imgSrc}" alt="${prod.nombre}">
         <h3>${prod.nombre}</h3>
       `;
 
-      // Redirigir al producto al hacer clic en cualquier parte de la tarjeta
       card.addEventListener('click', () => {
         window.location.href = `producto.html?id=${prod.id}`;
       });
