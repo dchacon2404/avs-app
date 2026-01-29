@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detalle del Producto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/NuevoDrop.css">
+</head>
+<body class="page-product">
+
+<header class="navbar">
+  <div class="nav-left">
+    <a href="index.html">Inicio</a>
+    <a href="NuevoDrop.html">Drop</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <h1 class="logo">AVS</h1>
+</header>
+
+<section class="product-detail">
+  <div class="detail-img">
+    <div class="slider" id="slider"></div>
+    <div id="banner-vendido" class="banner-vendido">VENDIDO</div>
+  </div>
+
+  <div class="detail-info">
+    <h2 id="prod-name">Nombre del Producto</h2>
+    <p id="prod-price" class="price">₡0.00</p>
+    <p id="prod-estado"></p>
+    <p id="prod-talla"></p>
+    <button id="add-cart" class="btn-cart">Agregar al carrito</button>
+    <button class="btn-buy">Comprar ahora</button>
+  </div>
+</section>
+
+<script>
+async function cargarProducto() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/productos/${id}`);
+    const producto = await res.json();
+
+    if (!producto || !producto.imagenes) throw new Error('Producto no encontrado');
+
+    const slider = document.getElementById('slider');
+    slider.innerHTML = "";
+
+    producto.imagenes.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src.startsWith("/") ? src.slice(1) : src;
+      img.alt = producto.nombre;
+      slider.appendChild(img);
+    });
+
+    document.getElementById('prod-name').textContent = producto.nombre;
+    document.getElementById('prod-price').textContent = `₡${Number(producto.precio).toLocaleString()}`;
+    document.getElementById('prod-estado').textContent = producto.estado;
+    document.getElementById('prod-talla').textContent = `Talla: ${producto.talla || 'Única'}`;
+
+    const addCartBtn = document.getElementById('add-cart');
+    const buyBtn = document.querySelector('.btn-buy');
+
+    if(producto.estado === 'Vendido'){
+      document.getElementById('banner-vendido').style.display = 'block';
+      addCartBtn.disabled = true;
+      buyBtn.disabled = true;
+      addCartBtn.style.opacity = '0.6';
+      buyBtn.style.opacity = '0.6';
+    } else {
+      document.getElementById('banner-vendido').style.display = 'none';
+      addCartBtn.disabled = false;
+      buyBtn.disabled = false;
+      addCartBtn.style.opacity = '1';
+      buyBtn.style.opacity = '1';
+    }
+
+    // Guardamos el producto en memoria global
+    window.productoActual = producto;
+
+  } catch(err){
+    console.error(err);
+    document.getElementById('prod-estado').textContent = 'No se pudo cargar el producto';
+  }
+}
+
+cargarProducto();
+
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || [];
+}
+
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function updateCartCount() {
+  const cart = getCart();
+  const totalItems = cart.reduce((sum, p) => sum + p.cantidad, 0);
+  localStorage.setItem("cartCount", totalItems);
+}
+
+// ✅ Modificado para guardar también el id
+document.getElementById("add-cart").addEventListener("click", () => {
+  if(!window.productoActual) return;
+
+  const producto = window.productoActual;
+  const name = producto.nombre;
+  const price = Number(producto.precio); 
+  const talla = producto.talla || 'Única';
+  const img = producto.imagenes[0].startsWith("/") ? producto.imagenes[0].slice(1) : producto.imagenes[0];
+
+  let cart = getCart();
+  const index = cart.findIndex(p => p.id === producto._id); // 🔹 ahora buscamos por id
+
+  if(index >= 0){
+    cart[index].cantidad++;
+  } else {
+    cart.push({ 
+      id: producto._id, // 🔹 guardamos id para usarlo al marcar como vendido
+      name, 
+      price, 
+      img, 
+      talla, 
+      cantidad: 1 
+    });
+  }
+
+  saveCart(cart);
+  updateCartCount();
+
+  window.location.href = "NuevoDrop.html";
+});
+
+// ✅ Comprar ahora directo a finalizar compra
+document.querySelector(".btn-buy").addEventListener("click", () => {
+  if (!window.productoActual) return;
+
+  const producto = {
+    id: window.productoActual._id, // 🔹 el id del backend
+    name: window.productoActual.nombre,
+    price: Number(window.productoActual.precio),
+    talla: window.productoActual.talla || "Única",
+    img: window.productoActual.imagenes[0].startsWith("/") 
+          ? window.productoActual.imagenes[0].slice(1) 
+          : window.productoActual.imagenes[0],
+    cantidad: 1
+  };
+
+  // Guardamos este producto en un "carrito temporal"
+  localStorage.setItem("directBuy", JSON.stringify([producto]));
+
+  // Redirigir a finalizar compra
+  window.location.href = "finalizarcompra.html";
+});
+</script>
+
+</body>
+</html>

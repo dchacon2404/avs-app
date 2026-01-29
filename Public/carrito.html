@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carrito de Compras</title>
+  <link rel="stylesheet" href="css/carrito.css">
+</head>
+<body>
+  <header class="main-header">
+    <a href="index.html" class="logo">AVS</a>
+  </header>
+
+  <main class="cart-container">
+    <section class="cart-items" id="cart-items">
+      <h2>Carrito (<span id="cart-count">0</span>)</h2>
+      <!-- Productos se cargan dinámicamente -->
+    </section>
+
+    <aside class="cart-summary">
+      <h3>Total estimado</h3>
+      <p id="cart-total">₡0</p>
+      <button class="checkout-btn">Pagar</button>
+    </aside>
+  </main>
+
+  <h2>You may also like</h2>
+  <!-- Sección "También te puede interesar" -->
+  <section class="prendas-section">
+    <div class="prendas-container" id="prendas-container">
+      <!-- Productos recomendados se cargarán dinámicamente -->
+    </div>
+  </section>
+
+<script>
+  // =================== CARRO ===================
+  function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  }
+
+  function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function updateCartCount() {
+    const cart = getCart();
+    const totalItems = cart.reduce((sum, p) => sum + p.cantidad, 0);
+    document.getElementById("cart-count").textContent = totalItems;
+    localStorage.setItem("cartCount", totalItems);
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const container = document.getElementById("cart-items");
+    container.innerHTML = "<h2>Carrito (<span id='cart-count'>0</span>)</h2>";
+
+    if (cart.length === 0) {
+      const emptyMsg = document.createElement("p");
+      emptyMsg.textContent = "Tu carrito está vacío. Añade productos para realizar la compra.";
+      emptyMsg.style.fontStyle = "italic";
+      emptyMsg.style.color = "#555";
+      container.appendChild(emptyMsg);
+
+      document.getElementById("cart-total").textContent = "₡0";
+      updateCartCount();
+      return;
+    }
+
+    let total = 0;
+
+    cart.forEach((item, index) => {
+      const priceNum = Number(item.price.toString().replace(/[^\d.-]/g, '')) || 0;
+      const subtotal = priceNum * item.cantidad;
+      total += subtotal;
+
+      const div = document.createElement("div");
+      div.classList.add("cart-item");
+      div.innerHTML = `
+        <img src="${item.img}" alt="${item.name}">
+        <div class="cart-item-info">
+          <h4>${item.name}</h4>
+          <p>Talla: ${item.talla}</p>
+          <p>Precio: ₡${priceNum.toLocaleString()}</p>
+          <p>Cantidad: ${item.cantidad}</p>
+          <p>Subtotal: ₡${subtotal.toLocaleString()}</p>
+        </div>
+        <div class="cart-item-controls">
+          <button class="remove-btn" onclick="removeItem(${index})">🗑</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    document.getElementById("cart-total").textContent = "₡" + total.toLocaleString();
+    updateCartCount();
+  }
+
+  function removeItem(index) {
+    let cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    renderCart();
+  }
+
+  document.addEventListener("DOMContentLoaded", renderCart);
+
+  // =================== RECOMENDADOS ===================
+  async function cargarPrendas() {
+    const container = document.getElementById('prendas-container');
+    container.innerHTML = '';
+
+    try {
+      const res = await fetch('http://localhost:3000/api/productos');
+      let productos = await res.json();
+
+      // Mezclar aleatoriamente los productos
+      productos = productos.sort(() => 0.5 - Math.random());
+
+      // Tomar máximo 5 productos
+      productos = productos.slice(0, 5);
+
+      productos.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        // Usar la primera imagen del array
+        const imgSrc = prod.imagenes[0].startsWith('/') ? prod.imagenes[0].slice(1) : prod.imagenes[0];
+
+        card.innerHTML = `
+          <img src="${imgSrc}" alt="${prod.nombre}">
+          <h3>${prod.nombre}</h3>
+        `;
+
+        // Toda la tarjeta clicable
+        card.addEventListener('click', () => {
+          window.location.href = `producto.html?id=${prod._id}`; // 🔹 usamos _id del backend
+        });
+
+        container.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error('Error cargando prendas:', err);
+      container.innerHTML = '<p>No se pudieron cargar las prendas. Intenta más tarde.</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarPrendas);
+</script>
+
+<script>
+  // Acción al presionar el botón de pagar
+  document.querySelector(".checkout-btn").addEventListener("click", () => {
+    const cart = getCart();
+
+    if (cart.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+
+    // Guardamos también el total en localStorage
+    const total = document.getElementById("cart-total").textContent;
+    localStorage.setItem("cartTotal", total);
+
+    // Redirigir a la nueva pantalla de finalizar compra
+    window.location.href = "finalizarcompra.html";
+  });
+</script>
+
+</body>
+</html>

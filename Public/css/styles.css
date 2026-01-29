@@ -1,0 +1,446 @@
+/* Reseteo */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* Contenedor del video */
+.video-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -2;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+/* Capa oscura encima del video */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.35);
+  z-index: -1;
+}
+
+/* Navbar */
+header {
+  position: fixed;
+  top: 20px; /* toda la barra más abajo */
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;           /* centra verticalmente todo */
+  justify-content: space-between; /* izquierda, centro, derecha */
+  padding: 0 40px;
+  height: 80px;                   /* altura de la barra */
+  background: transparent;
+}
+
+/* Menú a la izquierda */
+.nav-left {
+  display: flex;
+  gap: 30px;
+  align-items: center; /* centra verticalmente */
+}
+
+.nav-left a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-left a:hover {
+  color: #d4b483;
+}
+
+/* Logo centrado */
+.logo {
+  font-size: 24px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+/* Iconos a la derecha */
+.icons {
+  display: flex;
+  gap: 20px;
+  align-items: center; /* centra verticalmente */
+}
+
+.icons img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.icons img:hover {
+  transform: scale(1.2);
+}
+
+/* Hero */
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 5;
+}
+
+.hero-content h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff; /* Texto blanco */
+  background-color: transparent; /* Fondo transparente */
+  border: 2px solid #fff; /* Borde blanco */
+  border-radius: 30px;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.btn:hover {
+  background-color: #fff; /* Fondo blanco al pasar el mouse */
+  color: #000; /* Texto negro al pasar el mouse */
+  border-color: #fff; /* Mantener borde blanco */
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+
+/* ---------------- GALERÍA ---------------- */
+
+.featured-section {
+    padding: 100px 20px;
+    background-color: #fff;
+    color: #000;
+    text-align: center;
+}
+
+.featured-section h2 {
+    font-size: 2.8rem;
+    margin-bottom: 60px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.gallery-item {
+    overflow: hidden;
+    height: 700px;
+}
+
+.gallery-item img {
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.gallery-item img:hover {
+    transform: scale(1.03);
+    cursor: pointer;
+}
+
+.gallery-item.big {
+    grid-column: 1 / span 3;
+    height: 900px;
+}
+
+/* ---------------- SECCIÓN PRENDAS ESTILO ARCHIVES ---------------- */
+/* ---------------- SECCIÓN PRENDAS ESTILO ARCHIVES (REVISADO) ---------------- */
+.prendas-section {
+  padding: 0;
+  background-color: #010101;
+  text-align: center;
+  margin-bottom: 4rem; /* Espacio entre secciones */
+}
+
+.prendas-section h2 {
+  display: none; /* Ocultar título */
+}
+
+.prendas-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 columnas a lo largo */
+  gap: 0; /* Sin espacio entre imágenes */
+  width: 100%;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+/* Aseguramos que todo el enlace ocupe toda la tarjeta */
+.product-card a {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-card img {
+  width: 100%;
+  height: 450px; /* Puedes aumentar la altura si quieres que sean más largas */
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.1);
+}
+
+.product-card h3,
+.product-card .price {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.7);
+  padding: 5px 10px;
+}
+
+.product-card h3 {
+  bottom: 50px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.product-card .price {
+  bottom: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #d4b483;
+}
+
+/* Overlay al pasar el mouse */
+.product-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover::after {
+  opacity: 1;
+}
+
+
+/* ---------------- FOOTER ---------------- */
+
+/* ---------------- SECCIÓN ACERCA DE YHORYINA ---------------- */
+.about-section {
+  padding: 0; /* sin padding arriba/abajo */
+  background: #fff;
+  color: #000;
+}
+
+.about-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 65%;       /* ocupa todo el ancho de la pantalla */
+  margin: 0;          /* elimina márgenes automáticos */
+  min-height: 500px;
+}
+
+/* Imagen a la izquierda pegada */
+.about-image {
+  flex: 1;            /* ocupa la mitad izquierda */
+  width: 50vw;        /* ocupa la mitad del viewport */
+  height: 100%;
+  overflow: hidden;
+  margin: 0;          /* elimina márgenes */
+  padding: 0;         /* elimina padding */
+}
+
+.about-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* cubre todo el contenedor */
+  display: block;    /* elimina espacios invisibles */
+}
+
+
+/* Texto a la derecha ocupando la otra mitad */
+.about-text {
+  flex: 1; /* ocupa la mitad derecha */
+  max-width: 50%;
+  padding: 80px 40px; /* espacio interior para que el texto respire */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra verticalmente el texto */
+}
+
+.about-text h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.about-text p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Responsive: en pantallas pequeñas la imagen va arriba y el texto abajo */
+@media (max-width: 768px) {
+  .about-container {
+    flex-direction: column;
+  }
+
+  .about-image,
+  .about-text {
+    max-width: 100%;
+    flex: none;
+  }
+
+  .about-text {
+    padding: 40px 20px;
+  }
+}
+
+/* Footer */
+.custom-footer {
+  background: #F5F5DC;
+  color: #fff;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+.footer-logo {
+  max-width: 150px;
+  margin-bottom: 30px;
+}
+
+.footer-icons {
+  display: flex;
+  flex-direction: row; /* horizontal en escritorio */
+  gap: 20px;           /* espacio entre los iconos */
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-icons a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.footer-icons a img {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-icons a:hover {
+  color: #d4b483;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media (max-width: 768px) {
+  .nav-bar {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 20px;
+  }
+
+  .nav-left, .nav-right {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .gallery-item {
+    height: 400px;
+  }
+
+  .footer-columns {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .footer-column {
+    text-align: center;
+  }
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nuevo Drop - Alpha Vintage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/NuevoDrop.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header">
+    <img src="images/Paquetes.jpg" alt="Header" class="header-img">
+
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="index.html">Inicio</a>
+        <a href="NuevoDrop.html" class="active">Drop</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+
+      <div class="nav-center">
+        <h1 class="logo">AVS</h1>
+      </div>
+
+      <div class="nav-right">
+        <img src="images/buscar.png" alt="Buscar">
+        <img src="images/agregar-usuario.png" alt="Usuario">
+        <a href="carrito.html">
+          <img src="images/anadir-al-carrito.png" alt="Carrito">
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Catálogo -->
+  <section class="drop-section">
+    <div class="drop-grid">
+      <!-- Los productos se cargan dinámicamente -->
+    </div>
+  </section>
+
+  <script>
+const container = document.querySelector('.drop-grid');
+
+async function mostrarProductos() {
+  container.innerHTML = '';
+
+  try {
+    const res = await fetch('http://localhost:3000/api/productos');
+    const productos = await res.json();
+
+    productos.forEach(prod => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+
+      const imgSrc = prod.imagenes[0].startsWith("/") ? prod.imagenes[0].slice(1) : prod.imagenes[0];
+
+      card.innerHTML = `
+        <a href="producto.html?id=${prod.id}" class="card-link">
+          <div class="img-container">
+            <img src="${imgSrc}" alt="${prod.nombre}">
+            ${prod.estado === 'Vendido' ? '<div class="banner-vendido">VENDIDO</div>' : ''}
+          </div>
+          <h3>${prod.nombre}</h3>
+          <div class="price">₡${prod.precio}</div>
+          <div class="talla">Talla: ${prod.talla}</div>
+        </a>
+      `;
+
+      if(prod.estado === 'Vendido'){
+        card.style.opacity = '0.6';
+      }
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error('Error cargando productos:', err);
+    container.innerHTML = '<p>Error cargando productos. Intenta más tarde.</p>';
+  }
+}
+
+mostrarProductos();
+
+// ====== Contador del carrito ======
+function showCartCount() {
+  const count = localStorage.getItem("cartCount") || 0;
+  let cartIcon = document.querySelector('.nav-right a:last-child');
+  if (!cartIcon) return;
+
+  let badge = cartIcon.querySelector(".cart-badge");
+  if (!badge) {
+    badge = document.createElement("span");
+    badge.classList.add("cart-badge");
+    badge.style.position = "absolute";
+    badge.style.top = "0px";
+    badge.style.right = "0px";
+    badge.style.background = "white";
+    badge.style.color = "black";
+    badge.style.fontSize = "12px";
+    badge.style.padding = "2px 6px";
+    badge.style.borderRadius = "50%";
+    badge.style.fontWeight = "bold";
+    cartIcon.style.position = 'relative';
+    cartIcon.appendChild(badge);
+  }
+
+  badge.textContent = count;
+}
+
+document.addEventListener("DOMContentLoaded", showCartCount);
+</script>
+
+</body>
+</html>
