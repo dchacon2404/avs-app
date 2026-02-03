@@ -7,18 +7,17 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// ================== RUTA PRINCIPAL ==================
+// Servir archivos estáticos desde Public
 app.use(express.static('Public'));
+
+// Ruta principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Public', 'index.html'));
 });
 
-
 // ================== PRODUCTOS ==================
 
-// Obtener todos los productos
 app.get('/api/productos', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM productos');
@@ -39,7 +38,6 @@ app.get('/api/productos', async (req, res) => {
   }
 });
 
-// Obtener un producto por id
 app.get('/api/productos/:id', async (req, res) => {
   try {
     const result = await pool.query(
@@ -68,12 +66,10 @@ app.get('/api/productos/:id', async (req, res) => {
 
 // ================== PEDIDOS ==================
 
-// Crear un pedido y actualizar productos vendidos
 app.post('/api/pedidos', async (req, res) => {
   try {
     const { cliente, deliveryType, productos, total } = req.body;
 
-    // 1️⃣ Guardar pedido
     const pedidoResult = await pool.query(
       `
       INSERT INTO pedidos 
@@ -96,7 +92,6 @@ app.post('/api/pedidos', async (req, res) => {
 
     const pedidoId = pedidoResult.rows[0].id;
 
-    // 2️⃣ Guardar productos del pedido y marcar vendidos
     for (const p of productos) {
       await pool.query(
         `
