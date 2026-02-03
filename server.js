@@ -10,9 +10,11 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // ================== RUTA PRINCIPAL ==================
+app.use(express.static('Public'));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'Public', 'index.html'));
 });
+
 
 // ================== PRODUCTOS ==================
 
