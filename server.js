@@ -16,9 +16,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Public', 'index.html'));
 });
 
-// 🔥 Ruta explícita para producto.html (esto arregla el error)
-app.get('/producto.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public', 'producto.html'));
+// 🔥 Ruta explícita para Producto.html (con P mayúscula)
+app.get('/Producto.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Public', 'Producto.html'));
 });
 
 // ================== PRODUCTOS ==================
