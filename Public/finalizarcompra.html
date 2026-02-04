@@ -27,6 +27,7 @@
           <input id="apellidos" type="text" placeholder="Apellidos" required>
         </div>
         <input id="telefono" type="text" placeholder="Teléfono" required>
+        <input id="email" type="email" placeholder="Correo electrónico" required>
       </div>
 
       <div id="shipping-form" class="delivery-form hidden">
@@ -46,6 +47,7 @@
           <input id="codigo-postal" type="text" placeholder="Código Postal">
         </div>
         <input id="telefono-envio" type="text" placeholder="Teléfono" required>
+        <input id="email-envio" type="email" placeholder="Correo electrónico" required>
       </div>
 
       <section class="payment-section">
@@ -72,7 +74,7 @@
     <div class="popup-content">
       <span class="close" onclick="closePopup()">&times;</span>
       <h2>Pedido realizado exitosamente</h2>
-      <p>Gracias por tu compra. Te llevaremos de vuelta a la página principal.</p>
+      <p>Gracias por tu compra. Te enviamos la factura por correo.</p>
     </div>
   </div>
 
@@ -146,11 +148,13 @@
       const cliente = deliveryType === "pickup" ? {
         nombre: document.getElementById("nombre").value,
         apellidos: document.getElementById("apellidos").value,
-        telefono: document.getElementById("telefono").value
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value
       } : {
         nombre: document.getElementById("nombre-envio").value,
         apellidos: document.getElementById("apellidos-envio").value,
         telefono: document.getElementById("telefono-envio").value,
+        email: document.getElementById("email-envio").value,
         direccion: document.getElementById("direccion").value,
         provincia: document.getElementById("provincia").value,
         ciudad: document.getElementById("ciudad").value,

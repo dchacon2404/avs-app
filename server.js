@@ -73,54 +73,34 @@ app.post('/api/pedidos', async (req, res) => {
   try {
     const { cliente, deliveryType, productos, total } = req.body;
 
-    const pedidoResult = await pool.query(
-      `
-      INSERT INTO pedidos 
-      (nombre, apellidos, telefono, direccion, provincia, ciudad, codigopostal, deliverytype, total, fecha)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
-      RETURNING id
-      `,
-      [
-        cliente.nombre,
-        cliente.apellidos,
-        cliente.telefono,
-        cliente.direccion || null,
-        cliente.provincia || null,
-        cliente.ciudad || null,
-        cliente.codigoPostal || null,
+    // Aquí puedes guardar en base de datos si quieres
+    // await pool.query(...)
+
+    // Enviar a n8n
+    const response = await fetch('http://localhost:5678/webhook-test/7e0fd77e-e434-4df4-93ce-bf3d666d462b', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cliente,
         deliveryType,
-        total
-      ]
-    );
+        productos,
+        total,
+        fecha: new Date().toLocaleString()
+      })
+    });
 
-    const pedidoId = pedidoResult.rows[0].id;
-
-    for (const p of productos) {
-      await pool.query(
-        `
-        INSERT INTO pedidoproductos (pedidoid, productoid, cantidad, precio)
-        VALUES ($1,$2,$3,$4)
-        `,
-        [pedidoId, p.id, p.cantidad, p.price]
-      );
-
-      await pool.query(
-        `
-        UPDATE productos
-        SET estado = 'Vendido'
-        WHERE id = $1 AND TRIM(estado) = 'Disponible'
-        `,
-        [p.id]
-      );
+    if (!response.ok) {
+      throw new Error('Error al enviar pedido a n8n');
     }
 
-    res.json({ message: 'Pedido guardado correctamente', pedidoId });
+    res.json({ success: true, message: 'Pedido procesado correctamente' });
 
-  } catch (err) {
-    console.error("❌ Error al guardar pedido:", err);
-    res.status(500).send("Error al guardar el pedido");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error al procesar el pedido' });
   }
 });
+
 
 // ================== SERVER ==================
 const PORT = process.env.PORT || 3000;
