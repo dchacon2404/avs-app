@@ -77,7 +77,7 @@ app.post('/api/pedidos', async (req, res) => {
     // await pool.query(...)
 
     // Enviar a n8n
-    const response = await fetch('http://localhost:5678/webhook-test/7e0fd77e-e434-4df4-93ce-bf3d666d462b', {
+    const response = await fetch('http://localhost:5678/webhook/7e0fd77e-e434-4df4-93ce-bf3d666d462b', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
