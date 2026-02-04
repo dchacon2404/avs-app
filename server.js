@@ -9,11 +9,16 @@ app.use(cors());
 app.use(express.json());
 
 // Servir archivos estáticos desde Public
-app.use(express.static('Public'));
+app.use(express.static(path.join(__dirname, 'Public')));
 
 // Ruta principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Public', 'index.html'));
+});
+
+// 🔥 Ruta explícita para producto.html (esto arregla el error)
+app.get('/producto.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Public', 'producto.html'));
 });
 
 // ================== PRODUCTOS ==================
@@ -21,7 +26,6 @@ app.get('/', (req, res) => {
 app.get('/api/productos', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM productos');
-
     const productos = result.rows.map(p => ({
       id: p.id,
       nombre: p.nombre,
@@ -30,7 +34,6 @@ app.get('/api/productos', async (req, res) => {
       talla: p.talla,
       imagenes: JSON.parse(p.imagenes)
     }));
-
     res.json(productos);
   } catch (err) {
     console.error("❌ Error al obtener productos:", err);
