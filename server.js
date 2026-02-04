@@ -69,6 +69,8 @@ app.get('/api/productos/:id', async (req, res) => {
 
 // ================== PEDIDOS ==================
 
+// ================== PEDIDOS ==================
+
 app.post('/api/pedidos', async (req, res) => {
   try {
     const { cliente, deliveryType, productos, total } = req.body;
@@ -77,7 +79,9 @@ app.post('/api/pedidos', async (req, res) => {
     // await pool.query(...)
 
     // Enviar a n8n
-    const response = await fetch('https://avs-app.onrender.com/webhook/e743de39-6411-4d01-8834-daee8a64bbdf', {
+    const webhookURL = 'https://avs-app.onrender.com/webhook/e743de39-6411-4d01-8834-daee8a64bbdf';
+
+    const response = await fetch(webhookURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -89,17 +93,28 @@ app.post('/api/pedidos', async (req, res) => {
       })
     });
 
+    // ✅ Revisar la respuesta de n8n
+    const text = await response.text(); // texto del body
+    console.log('🟢 Respuesta n8n Status:', response.status);
+    console.log('🟢 Respuesta n8n Body:', text);
+
     if (!response.ok) {
-      throw new Error('Error al enviar pedido a n8n');
+      return res.status(response.status).json({
+        success: false,
+        message: `Error al enviar pedido a n8n`,
+        n8nStatus: response.status,
+        n8nBody: text
+      });
     }
 
     res.json({ success: true, message: 'Pedido procesado correctamente' });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Error al procesar el pedido' });
+    console.error('❌ Error al procesar pedido:', error);
+    res.status(500).json({ success: false, message: 'Error al procesar el pedido', error: error.message });
   }
 });
+
 
 
 // ================== SERVER ==================
