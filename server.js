@@ -4,6 +4,9 @@ const cors = require('cors');
 const pool = require('./db');
 const path = require('path');
 
+// Si usas Node < 18, descomenta la siguiente línea:
+// const fetch = require('node-fetch');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -69,17 +72,12 @@ app.get('/api/productos/:id', async (req, res) => {
 
 // ================== PEDIDOS ==================
 
-// ================== PEDIDOS ==================
-
 app.post('/api/pedidos', async (req, res) => {
   try {
     const { cliente, deliveryType, productos, total } = req.body;
 
-    // Aquí puedes guardar en base de datos si quieres
-    // await pool.query(...)
-
-    // Enviar a n8n
-    const webhookURL = 'https://avs-app.onrender.com/webhook/e743de39-6411-4d01-8834-daee8a64bbdf';
+    // Enviar a n8n (URL NUEVA)
+    const webhookURL = 'https://avs-app.onrender.com/webhook/e27a027a-58aa-496c-aa83-73b53f6a3b16';
 
     const response = await fetch(webhookURL, {
       method: 'POST',
@@ -93,15 +91,14 @@ app.post('/api/pedidos', async (req, res) => {
       })
     });
 
-    // ✅ Revisar la respuesta de n8n
-    const text = await response.text(); // texto del body
+    const text = await response.text();
     console.log('🟢 Respuesta n8n Status:', response.status);
     console.log('🟢 Respuesta n8n Body:', text);
 
     if (!response.ok) {
       return res.status(response.status).json({
         success: false,
-        message: `Error al enviar pedido a n8n`,
+        message: 'Error al enviar pedido a n8n',
         n8nStatus: response.status,
         n8nBody: text
       });
@@ -111,11 +108,13 @@ app.post('/api/pedidos', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error al procesar pedido:', error);
-    res.status(500).json({ success: false, message: 'Error al procesar el pedido', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar el pedido',
+      error: error.message
+    });
   }
 });
-
-
 
 // ================== SERVER ==================
 const PORT = process.env.PORT || 3000;
