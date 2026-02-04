@@ -76,8 +76,8 @@ app.post('/api/pedidos', async (req, res) => {
   try {
     const { cliente, deliveryType, productos, total } = req.body;
 
-    // Enviar a n8n (URL NUEVA)
-    const webhookURL = 'https://avs-app.onrender.com/webhook/e27a027a-58aa-496c-aa83-73b53f6a3b16';
+    // 👉 Enviar a Pipedream
+    const webhookURL = 'https://eo1kh69or5opu0w.m.pipedream.net';
 
     const response = await fetch(webhookURL, {
       method: 'POST',
@@ -92,15 +92,15 @@ app.post('/api/pedidos', async (req, res) => {
     });
 
     const text = await response.text();
-    console.log('🟢 Respuesta n8n Status:', response.status);
-    console.log('🟢 Respuesta n8n Body:', text);
+    console.log('🟢 Respuesta Pipedream Status:', response.status);
+    console.log('🟢 Respuesta Pipedream Body:', text);
 
     if (!response.ok) {
       return res.status(response.status).json({
         success: false,
-        message: 'Error al enviar pedido a n8n',
-        n8nStatus: response.status,
-        n8nBody: text
+        message: 'Error al enviar pedido a Pipedream',
+        status: response.status,
+        body: text
       });
     }
 
