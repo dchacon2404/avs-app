@@ -4,7 +4,7 @@ const cors = require('cors');
 const pool = require('./db');
 const path = require('path');
 
-// Si usas Node < 18, descomenta la siguiente línea:
+// Si usas Node < 18, descomenta:
 // const fetch = require('node-fetch');
 
 const app = express();
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Public', 'index.html'));
 });
 
-// 🔥 Ruta explícita para Producto.html (con P mayúscula)
+// Ruta explícita para Producto.html
 app.get('/Producto.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'Public', 'Producto.html'));
 });
@@ -74,9 +74,17 @@ app.get('/api/productos/:id', async (req, res) => {
 
 app.post('/api/pedidos', async (req, res) => {
   try {
+    console.log('📩 Pedido recibido:', req.body);
+
     const { cliente, deliveryType, productos, total } = req.body;
 
-    // 👉 Enviar a Pipedream
+    if (!cliente || !productos || !total) {
+      return res.status(400).json({
+        success: false,
+        message: 'Faltan datos en el pedido'
+      });
+    }
+
     const webhookURL = 'https://eo1kh69or5opu0w.m.pipedream.net';
 
     const response = await fetch(webhookURL, {
