@@ -77,7 +77,7 @@ app.post('/api/pedidos', async (req, res) => {
     // await pool.query(...)
 
     // Enviar a n8n
-    const response = await fetch('https://avs-app.onrender.com/webhook/0e9b6e99-b038-4b2d-b2d7-75eb586b8cb9', {
+    const response = await fetch('https://avs-app.onrender.com/webhook/e743de39-6411-4d01-8834-daee8a64bbdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
