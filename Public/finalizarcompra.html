@@ -9,7 +9,7 @@
   <!-- EmailJS SDK -->
   <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script type="text/javascript">
-    emailjs.init("qV_7Osu_hsAn8o0oX"); // <--- reemplaza con tu Public Key de EmailJS
+    emailjs.init("0AMhF_DTGwhxpoeRb"); // <--- reemplaza con tu Public Key de EmailJS
   </script>
 </head>
 <body>
@@ -83,6 +83,23 @@
       <p>Gracias por tu compra. Te enviamos la factura por correo.</p>
     </div>
   </div>
+
+  <button id="prueba-email">Probar Email</button>
+
+<script>
+document.getElementById("prueba-email").addEventListener("click", () => {
+  emailjs.send("service_olesnyd", "template_ycupd5q", {
+    cliente_nombre: "David",
+    cliente_apellidos: "CH",
+    email_cliente: "correo@destino.com",
+    deliveryType: "Recolectar",
+    productos: "Collar 1 (2), Pulsera 1 (1)",
+    total: "₡3500"
+  }).then(res => console.log("✅ Email de prueba enviado", res))
+    .catch(err => console.error("❌ Error email prueba", err));
+});
+</script>
+
 
   <script>
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
