@@ -79,128 +79,133 @@
   </div>
 
   <script>
-    // ================== Manejo de formularios ==================
-    const deliveryButtons = document.querySelectorAll('.delivery-btn');
-    const pickupForm = document.getElementById('pickup-form');
-    const shippingForm = document.getElementById('shipping-form');
+    document.addEventListener("DOMContentLoaded", () => {
 
-    deliveryButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        deliveryButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if(btn.dataset.type === 'pickup') {
-          pickupForm.classList.remove('hidden');
-          shippingForm.classList.add('hidden');
-        } else {
-          shippingForm.classList.remove('hidden');
-          pickupForm.classList.add('hidden');
-        }
-      });
-    });
+      // ================== Manejo de formularios ==================
+      const deliveryButtons = document.querySelectorAll('.delivery-btn');
+      const pickupForm = document.getElementById('pickup-form');
+      const shippingForm = document.getElementById('shipping-form');
 
-    function closePopup() {
-      document.getElementById("success-popup").style.display = "none";
-      window.location.href = "index.html";
-    }
-
-    function getCart() {
-      const directBuy = JSON.parse(localStorage.getItem("directBuy"));
-      if (directBuy) return directBuy;
-      return JSON.parse(localStorage.getItem("cart")) || [];
-    }
-
-    function renderOrderSummary() {
-      const cart = getCart();
-      const container = document.getElementById("order-summary");
-      container.innerHTML = "";
-      if (cart.length === 0) {
-        container.innerHTML = "<p>Tu carrito está vacío.</p>";
-        document.getElementById("final-total").textContent = "₡0";
-        return;
-      }
-      let total = 0;
-      cart.forEach(item => {
-        const subtotal = Number(item.price) * item.cantidad;
-        total += subtotal;
-        const div = document.createElement("div");
-        div.classList.add("product");
-        div.innerHTML = `
-          <img src="${item.img}" alt="${item.name}">
-          <div class="product-info">
-            <h4>${item.name}</h4>
-            <p>Talla: ${item.talla}</p>
-            <p>Cantidad: ${item.cantidad}</p>
-            <p>Subtotal: ₡${subtotal.toLocaleString()}</p>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      document.getElementById("final-total").textContent = "₡" + total.toLocaleString();
-    }
-
-    document.addEventListener("DOMContentLoaded", renderOrderSummary);
-
-    // ================== Envío de datos al backend ==================
-    document.getElementById("finalizar-pedido").addEventListener("click", async () => {
-      const cart = getCart();
-      if (cart.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
-      }
-
-      const deliveryType = document.querySelector('.delivery-btn.active').dataset.type;
-
-      const cliente = deliveryType === "pickup" ? {
-        nombre: document.getElementById("nombre").value.trim(),
-        apellidos: document.getElementById("apellidos").value.trim(),
-        telefono: document.getElementById("telefono").value.trim(),
-        email: document.getElementById("email").value.trim()
-      } : {
-        nombre: document.getElementById("nombre-envio").value.trim(),
-        apellidos: document.getElementById("apellidos-envio").value.trim(),
-        telefono: document.getElementById("telefono-envio").value.trim(),
-        email: document.getElementById("email-envio").value.trim(),
-        direccion: document.getElementById("direccion").value.trim(),
-        provincia: document.getElementById("provincia").value.trim(),
-        ciudad: document.getElementById("ciudad").value.trim(),
-        codigoPostal: document.getElementById("codigo-postal").value.trim()
-      };
-
-      if (!cliente.nombre || !cliente.apellidos || !cliente.telefono || !cliente.email) {
-        alert("Por favor completa todos los campos obligatorios.");
-        return;
-      }
-
-      const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
-      const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
-
-      try {
-        const response = await fetch('/api/enviar-correo', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            cliente,
-            productosTexto,
-            total,
-            deliveryType
-          })
+      deliveryButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          deliveryButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if(btn.dataset.type === 'pickup') {
+            pickupForm.classList.remove('hidden');
+            shippingForm.classList.add('hidden');
+          } else {
+            shippingForm.classList.remove('hidden');
+            pickupForm.classList.add('hidden');
+          }
         });
+      });
 
-        const data = await response.json();
+      function closePopup() {
+        document.getElementById("success-popup").style.display = "none";
+        window.location.href = "index.html";
+      }
+      window.closePopup = closePopup;
 
-        if (!response.ok) {
-          throw new Error(data.message || "Error al enviar correos");
+      function getCart() {
+        const directBuy = JSON.parse(localStorage.getItem("directBuy"));
+        if (directBuy) return directBuy;
+        return JSON.parse(localStorage.getItem("cart")) || [];
+      }
+
+      function renderOrderSummary() {
+        const cart = getCart();
+        const container = document.getElementById("order-summary");
+        container.innerHTML = "";
+        if (cart.length === 0) {
+          container.innerHTML = "<p>Tu carrito está vacío.</p>";
+          document.getElementById("final-total").textContent = "₡0";
+          return;
+        }
+        let total = 0;
+        cart.forEach(item => {
+          const subtotal = Number(item.price) * item.cantidad;
+          total += subtotal;
+          const div = document.createElement("div");
+          div.classList.add("product");
+          div.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <div class="product-info">
+              <h4>${item.name}</h4>
+              <p>Talla: ${item.talla}</p>
+              <p>Cantidad: ${item.cantidad}</p>
+              <p>Subtotal: ₡${subtotal.toLocaleString()}</p>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+        document.getElementById("final-total").textContent = "₡" + total.toLocaleString();
+      }
+
+      renderOrderSummary();
+
+      // ================== Envío de datos al backend ==================
+      document.getElementById("finalizar-pedido").addEventListener("click", async () => {
+        const cart = getCart();
+        if (cart.length === 0) {
+          alert("Tu carrito está vacío.");
+          return;
         }
 
-        console.log("✅ Correos enviados:", data);
-        localStorage.removeItem("cart");
-        localStorage.removeItem("directBuy");
-        document.getElementById("success-popup").style.display = "flex";
+        const deliveryType = document.querySelector('.delivery-btn.active').dataset.type;
 
-      } catch (error) {
-        console.error("❌ Error:", error);
-        alert("Hubo un error al enviar la confirmación. Intenta de nuevo.");
-      }
+        const cliente = deliveryType === "pickup" ? {
+          nombre: document.getElementById("nombre").value.trim(),
+          apellidos: document.getElementById("apellidos").value.trim(),
+          telefono: document.getElementById("telefono").value.trim(),
+          email: document.getElementById("email").value.trim()
+        } : {
+          nombre: document.getElementById("nombre-envio").value.trim(),
+          apellidos: document.getElementById("apellidos-envio").value.trim(),
+          telefono: document.getElementById("telefono-envio").value.trim(),
+          email: document.getElementById("email-envio").value.trim(),
+          direccion: document.getElementById("direccion").value.trim(),
+          provincia: document.getElementById("provincia").value.trim(),
+          ciudad: document.getElementById("ciudad").value.trim(),
+          codigoPostal: document.getElementById("codigo-postal").value.trim()
+        };
+
+        if (!cliente.nombre || !cliente.apellidos || !cliente.telefono || !cliente.email) {
+          alert("Por favor completa todos los campos obligatorios.");
+          return;
+        }
+
+        const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
+        const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
+
+        try {
+          const response = await fetch('/api/enviar-correo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              cliente,
+              productosTexto,
+              total,
+              deliveryType
+            })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || "Error al enviar correos");
+          }
+
+          console.log("✅ Correos enviados:", data);
+          localStorage.removeItem("cart");
+          localStorage.removeItem("directBuy");
+          document.getElementById("success-popup").style.display = "flex";
+
+        } catch (error) {
+          console.error("❌ Error:", error);
+          alert("Hubo un error al enviar la confirmación. Intenta de nuevo.");
+        }
+      });
+
     });
   </script>
 </body>
