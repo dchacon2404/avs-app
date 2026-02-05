@@ -63,36 +63,51 @@ const transporter = nodemailer.createTransport({
 });
 
 app.post('/api/enviar-correo', async (req, res) => {
-  const { cliente, productosTexto, total, deliveryType } = req.body;
+  const { cliente, productos, total, deliveryType } = req.body;
 
-  if (!cliente || !productosTexto || !total) {
+  if (!cliente || !productos || !total) {
     return res.status(400).json({ message: "Faltan datos para enviar el correo" });
   }
+
+  // Crear lista HTML de productos
+  const productosHTML = productos.map(p => `
+    <li>
+      ${p.nombre} - Talla: ${p.talla} - Cantidad: ${p.cantidad} - Precio: ₡${Number(p.precio).toLocaleString()}
+    </li>
+  `).join('');
 
   const mailOptionsCliente = {
     from: process.env.EMAIL_USER,
     to: cliente.email,
-    subject: 'Compra exitosa ✅',
+    subject: 'Compra exitosa en AVS ✅',
     html: `
-      <h2>Hola ${cliente.nombre} ${cliente.apellidos}</h2>
-      <p>Tu compra ha sido exitosa.</p>
-      <p><strong>Productos:</strong> ${productosTexto}</p>
-      <p><strong>Total:</strong> ₡${total}</p>
-      <p>Gracias por tu compra 😊</p>
+      <h2>Hola ${cliente.nombre} ${cliente.apellidos} 👋</h2>
+      <p>Tu compra se realizó exitosamente.</p>
+      <h3>🛒 Detalle de tu pedido:</h3>
+      <ul>${productosHTML}</ul>
+      <p><strong>Total:</strong> ₡${Number(total).toLocaleString()}</p>
+      <p><strong>Tipo de entrega:</strong> ${deliveryType === "pickup" ? "Recolectar en tienda" : "Envío a domicilio"}</p>
+      <br>
+      <p>Gracias por confiar en <strong>AVS</strong> 💖</p>
     `
   };
 
   const mailOptionsTienda = {
     from: process.env.EMAIL_USER,
-    to: 'CORREO_DE_TU_NOVIA@gmail.com', // ⬅️ CAMBIA ESTO
-    subject: 'Nuevo pedido recibido',
+    to: 'alphavintagestore17@gmail.com', // 🔴 CAMBIA ESTO
+    subject: '📦 Nuevo pedido recibido - AVS',
     html: `
-      <h2>Nuevo pedido</h2>
+      <h2>Nuevo pedido recibido 🛍️</h2>
       <p><strong>Cliente:</strong> ${cliente.nombre} ${cliente.apellidos}</p>
       <p><strong>Email:</strong> ${cliente.email}</p>
+      <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
       <p><strong>Tipo de entrega:</strong> ${deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"}</p>
-      <p><strong>Productos:</strong> ${productosTexto}</p>
-      <p><strong>Total:</strong> ₡${total}</p>
+      ${deliveryType === "shipping" ? `
+        <p><strong>Dirección:</strong> ${cliente.direccion}, ${cliente.ciudad}, ${cliente.provincia}</p>
+      ` : ''}
+      <h3>🛒 Productos:</h3>
+      <ul>${productosHTML}</ul>
+      <p><strong>Total:</strong> ₡${Number(total).toLocaleString()}</p>
     `
   };
 
