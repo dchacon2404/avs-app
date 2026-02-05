@@ -4,28 +4,16 @@ const cors = require('cors');
 const pool = require('./db');
 const path = require('path');
 
-// Si usas Node < 18, descomenta:
-// const fetch = require('node-fetch');
-
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Servir archivos estáticos desde Public
 app.use(express.static(path.join(__dirname, 'Public')));
 
-// Ruta principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public', 'index.html'));
-});
-
-// Ruta explícita para Producto.html
-app.get('/Producto.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public', 'Producto.html'));
-});
+// ================== Rutas ==================
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'index.html')));
+app.get('/Producto.html', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Producto.html')));
 
 // ================== PRODUCTOS ==================
-
 app.get('/api/productos', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM productos');
@@ -46,14 +34,8 @@ app.get('/api/productos', async (req, res) => {
 
 app.get('/api/productos/:id', async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT * FROM productos WHERE id = $1',
-      [req.params.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).send('Producto no encontrado');
-    }
+    const result = await pool.query('SELECT * FROM productos WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).send('Producto no encontrado');
 
     const p = result.rows[0];
     res.json({
@@ -67,60 +49,6 @@ app.get('/api/productos/:id', async (req, res) => {
   } catch (err) {
     console.error("❌ Error al obtener producto:", err);
     res.status(500).send("Error al obtener producto");
-  }
-});
-
-// ================== PEDIDOS ==================
-
-app.post('/api/pedidos', async (req, res) => {
-  try {
-    console.log('📩 Pedido recibido:', req.body);
-
-    const { cliente, deliveryType, productos, total } = req.body;
-
-    if (!cliente || !productos || !total) {
-      return res.status(400).json({
-        success: false,
-        message: 'Faltan datos en el pedido'
-      });
-    }
-
-    const webhookURL = 'https://eo85zrsdu038fgb.m.pipedream.net';
-
-    const response = await fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        cliente,
-        deliveryType,
-        productos,
-        total,
-        fecha: new Date().toLocaleString()
-      })
-    });
-
-    const text = await response.text();
-    console.log('🟢 Respuesta Pipedream Status:', response.status);
-    console.log('🟢 Respuesta Pipedream Body:', text);
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        success: false,
-        message: 'Error al enviar pedido a Pipedream',
-        status: response.status,
-        body: text
-      });
-    }
-
-    res.json({ success: true, message: 'Pedido procesado correctamente' });
-
-  } catch (error) {
-    console.error('❌ Error al procesar pedido:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al procesar el pedido',
-      error: error.message
-    });
   }
 });
 
