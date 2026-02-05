@@ -146,66 +146,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", renderOrderSummary);
-
-    // ================== Manejo de envío de correo ==================
-    document.getElementById("finalizar-pedido").addEventListener("click", async () => {
-      const cart = getCart();
-      if (cart.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
-      }
-
-      const deliveryType = document.querySelector('.delivery-btn.active').dataset.type;
-
-      const cliente = deliveryType === "pickup" ? {
-        nombre: document.getElementById("nombre").value.trim(),
-        apellidos: document.getElementById("apellidos").value.trim(),
-        telefono: document.getElementById("telefono").value.trim(),
-        email: document.getElementById("email").value.trim()
-      } : {
-        nombre: document.getElementById("nombre-envio").value.trim(),
-        apellidos: document.getElementById("apellidos-envio").value.trim(),
-        telefono: document.getElementById("telefono-envio").value.trim(),
-        email: document.getElementById("email-envio").value.trim(),
-        direccion: document.getElementById("direccion").value.trim(),
-        provincia: document.getElementById("provincia").value.trim(),
-        ciudad: document.getElementById("ciudad").value.trim(),
-        codigoPostal: document.getElementById("codigo-postal").value.trim()
-      };
-
-      if (!cliente.nombre || !cliente.apellidos || !cliente.telefono || !cliente.email) {
-        alert("Por favor completa todos los campos obligatorios.");
-        return;
-      }
-
-      const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
-      const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
-
-      // --- Enviar correo al cliente ---
-      emailjs.send("service_olesnyd", "template_wz6kcm9", {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email: cliente.email, // destinatario del cliente
-        productos: productosTexto,
-        total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo cliente enviado:", res))
-        .catch(err => console.error("❌ Error correo cliente:", err));
-
-      // --- Enviar correo a tu novia ---
-      emailjs.send("service_olesnyd", "template_ycupd5q", {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email_cliente: cliente.email, // email del cliente para que tu novia lo vea
-        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
-        productos: productosTexto,
-        total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo novia enviado:", res))
-        .catch(err => console.error("❌ Error correo novia:", err));
-
-      localStorage.removeItem("cart");
-      localStorage.removeItem("directBuy");
-      document.getElementById("success-popup").style.display = "flex";
-    });
   </script>
 </body>
 </html>
