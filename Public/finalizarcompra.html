@@ -6,10 +6,11 @@
   <title>Finalizar Compra - AVS</title>
   <link rel="stylesheet" href="css/finalizarcompra.css">
 
-  <!-- EmailJS SDK -->
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript">
-    emailjs.init("0AMhF_DTGwhxpoeRb"); // <--- reemplaza con tu Public Key de EmailJS
+  <!-- EmailJS SDK v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // Inicializar EmailJS con tu Public Key
+    emailjs.init('0AMhF_DTGwhxpoeRb');
   </script>
 </head>
 <body>
@@ -84,24 +85,8 @@
     </div>
   </div>
 
-  <button id="prueba-email">Probar Email</button>
-
-<script>
-document.getElementById("prueba-email").addEventListener("click", () => {
-  emailjs.send("service_olesnyd", "template_ycupd5q", {
-    cliente_nombre: "David",
-    cliente_apellidos: "CH",
-    email_cliente: "correo@destino.com",
-    deliveryType: "Recolectar",
-    productos: "Collar 1 (2), Pulsera 1 (1)",
-    total: "₡3500"
-  }).then(res => console.log("✅ Email de prueba enviado", res))
-    .catch(err => console.error("❌ Error email prueba", err));
-});
-</script>
-
-
   <script>
+    // ================== Manejo de formularios ==================
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
     const pickupForm = document.getElementById('pickup-form');
     const shippingForm = document.getElementById('shipping-form');
@@ -162,6 +147,7 @@ document.getElementById("prueba-email").addEventListener("click", () => {
 
     document.addEventListener("DOMContentLoaded", renderOrderSummary);
 
+    // ================== Manejo de envío de correo ==================
     document.getElementById("finalizar-pedido").addEventListener("click", async () => {
       const cart = getCart();
       if (cart.length === 0) {
@@ -195,17 +181,17 @@ document.getElementById("prueba-email").addEventListener("click", () => {
       const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
       const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
 
-      // --- Correo al cliente ---
+      // --- Enviar correo al cliente ---
       emailjs.send("service_olesnyd", "template_wz6kcm9", {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
         email: cliente.email,
         productos: productosTexto,
         total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo cliente enviado", res))
-        .catch(err => console.error("❌ Error correo cliente", err));
+      }).then(res => console.log("✅ Correo cliente enviado:", res))
+        .catch(err => console.error("❌ Error correo cliente:", err));
 
-      // --- Correo a tu novia ---
+      // --- Enviar correo a tu novia ---
       emailjs.send("service_olesnyd", "template_ycupd5q", {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
@@ -213,8 +199,8 @@ document.getElementById("prueba-email").addEventListener("click", () => {
         deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
         productos: productosTexto,
         total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo novia enviado", res))
-        .catch(err => console.error("❌ Error correo novia", err));
+      }).then(res => console.log("✅ Correo novia enviado:", res))
+        .catch(err => console.error("❌ Error correo novia:", err));
 
       localStorage.removeItem("cart");
       localStorage.removeItem("directBuy");
@@ -223,3 +209,4 @@ document.getElementById("prueba-email").addEventListener("click", () => {
   </script>
 </body>
 </html>
+
