@@ -185,7 +185,7 @@
       emailjs.send("service_olesnyd", "template_wz6kcm9", {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
-        email: cliente.email,
+        email: cliente.email, // destinatario del cliente
         productos: productosTexto,
         total: total.toLocaleString()
       }).then(res => console.log("✅ Correo cliente enviado:", res))
@@ -195,7 +195,7 @@
       emailjs.send("service_olesnyd", "template_ycupd5q", {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
-        email_cliente: cliente.email,
+        email_cliente: cliente.email, // email del cliente para que tu novia lo vea
         deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
         productos: productosTexto,
         total: total.toLocaleString()
@@ -209,4 +209,3 @@
   </script>
 </body>
 </html>
-
