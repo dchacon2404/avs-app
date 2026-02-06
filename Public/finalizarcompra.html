@@ -180,29 +180,25 @@
 
       console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
-      // --- Correo al cliente ---
-      emailjs.send("service_olesnyd", "template_wz6kcm9", {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
+      const templateParams = {
+        nombre: cliente.nombre,
+        apellidos: cliente.apellidos,
+        telefono: cliente.telefono,
         email: cliente.email,
         productos: productosTexto,
-        total: total.toLocaleString()
-      })
-      .then(res => console.log("✅ Correo cliente enviado:", res))
-      .catch(err => console.error("❌ Error correo cliente:", err));
+        total: total.toLocaleString(),
+        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
+      };
+
+      // --- Correo al cliente ---
+      emailjs.send("service_olesnyd", "template_wz6kcm9", templateParams)
+        .then(res => console.log("✅ Correo cliente enviado:", res))
+        .catch(err => console.error("❌ Error correo cliente:", err));
 
       // --- Correo a tu novia ---
-      emailjs.send("service_olesnyd", "template_ycupd5q", {
-        to_email: "alphavintagestore17@gmail.com",
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email_cliente: cliente.email,
-        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
-        productos: productosTexto,
-        total: total.toLocaleString()
-      })
-      .then(res => console.log("✅ Correo novia enviado:", res))
-      .catch(err => console.error("❌ Error correo novia:", err));
+      emailjs.send("service_olesnyd", "template_ycupd5q", templateParams)
+        .then(res => console.log("✅ Correo novia enviado:", res))
+        .catch(err => console.error("❌ Error correo novia:", err));
 
       localStorage.removeItem("cart");
       localStorage.removeItem("directBuy");
