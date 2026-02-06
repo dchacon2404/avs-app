@@ -9,7 +9,6 @@
   <!-- EmailJS SDK v4 -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    // Inicializar EmailJS con tu Public Key
     emailjs.init('0AMhF_DTGwhxpoeRb');
   </script>
 </head>
@@ -95,7 +94,7 @@
       btn.addEventListener('click', () => {
         deliveryButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        if(btn.dataset.type === 'pickup') {
+        if (btn.dataset.type === 'pickup') {
           pickupForm.classList.remove('hidden');
           shippingForm.classList.add('hidden');
         } else {
@@ -181,6 +180,8 @@
       const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
       const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
 
+      console.log("📦 Enviando pedido:", cliente, productosTexto, total);
+
       // --- Enviar correo al cliente ---
       emailjs.send("service_olesnyd", "template_wz6kcm9", {
         cliente_nombre: cliente.nombre,
@@ -188,8 +189,9 @@
         email: cliente.email,
         productos: productosTexto,
         total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo cliente enviado:", res))
-        .catch(err => console.error("❌ Error correo cliente:", err));
+      })
+      .then(res => console.log("✅ Correo cliente enviado:", res))
+      .catch(err => console.error("❌ Error correo cliente:", err));
 
       // --- Enviar correo a tu novia ---
       emailjs.send("service_olesnyd", "template_ycupd5q", {
@@ -199,8 +201,9 @@
         deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
         productos: productosTexto,
         total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo novia enviado:", res))
-        .catch(err => console.error("❌ Error correo novia:", err));
+      })
+      .then(res => console.log("✅ Correo novia enviado:", res))
+      .catch(err => console.error("❌ Error correo novia:", err));
 
       localStorage.removeItem("cart");
       localStorage.removeItem("directBuy");
@@ -209,4 +212,3 @@
   </script>
 </body>
 </html>
-
