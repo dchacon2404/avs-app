@@ -181,13 +181,13 @@
       console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
       const templateParams = {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email_cliente: cliente.email,
-        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
+        nombre: cliente.nombre,
+        apellidos: cliente.apellidos,
         telefono: cliente.telefono,
+        email: cliente.email,
         productos: productosTexto,
-        total: total.toLocaleString()
+        total: total.toLocaleString(),
+        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
       };
 
       // --- Correo al cliente ---
