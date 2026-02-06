@@ -85,7 +85,6 @@
   </div>
 
   <script>
-    // ================== Manejo de formularios ==================
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
     const pickupForm = document.getElementById('pickup-form');
     const shippingForm = document.getElementById('shipping-form');
@@ -146,7 +145,6 @@
 
     document.addEventListener("DOMContentLoaded", renderOrderSummary);
 
-    // ================== Manejo de envío de correo ==================
     document.getElementById("finalizar-pedido").addEventListener("click", async () => {
       const cart = getCart();
       if (cart.length === 0) {
@@ -182,7 +180,7 @@
 
       console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
-      // --- Enviar correo al cliente ---
+      // --- Correo al cliente ---
       emailjs.send("service_olesnyd", "template_wz6kcm9", {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
@@ -193,7 +191,7 @@
       .then(res => console.log("✅ Correo cliente enviado:", res))
       .catch(err => console.error("❌ Error correo cliente:", err));
 
-      // --- Enviar correo a tu novia ---
+      // --- Correo a tu novia ---
       emailjs.send("service_olesnyd", "template_ycupd5q", {
         to_email: "alphavintagestore17@gmail.com",
         cliente_nombre: cliente.nombre,
