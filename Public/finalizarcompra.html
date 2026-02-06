@@ -183,11 +183,11 @@
       const templateParams = {
         cliente_nombre: cliente.nombre,
         cliente_apellidos: cliente.apellidos,
-        telefono: cliente.telefono,
         email_cliente: cliente.email,
+        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
+        telefono: cliente.telefono,
         productos: productosTexto,
-        total: total.toLocaleString(),
-        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
+        total: total.toLocaleString()
       };
 
       // --- Correo al cliente ---
