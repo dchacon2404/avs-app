@@ -181,10 +181,10 @@
       console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
       const templateParams = {
-        nombre: cliente.nombre,
-        apellidos: cliente.apellidos,
+        cliente_nombre: cliente.nombre,
+        cliente_apellidos: cliente.apellidos,
         telefono: cliente.telefono,
-        email: cliente.email,
+        email_cliente: cliente.email,
         productos: productosTexto,
         total: total.toLocaleString(),
         deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
