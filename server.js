@@ -10,124 +10,82 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'Public')));
 
-// ================== Rutas ==================
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'index.html')));
-app.get('/Producto.html', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Producto.html')));
-
-// ================== PRODUCTOS ==================
-app.get('/api/productos', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM productos');
-    const productos = result.rows.map(p => ({
-      id: p.id,
-      nombre: p.nombre,
-      precio: p.precio,
-      estado: p.estado,
-      talla: p.talla,
-      imagenes: JSON.parse(p.imagenes)
-    }));
-    res.json(productos);
-  } catch (err) {
-    console.error("❌ Error al obtener productos:", err);
-    res.status(500).send("Error al obtener productos");
-  }
+// Página principal
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Public', 'index.html'));
 });
 
-app.get('/api/productos/:id', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM productos WHERE id = $1', [req.params.id]);
-    if (result.rows.length === 0) return res.status(404).send('Producto no encontrado');
+// ================== RUTA FINALIZAR COMPRA ==================
+app.post('/api/finalizar-compra', async (req, res) => {
+  const { nombre, email, telefono, direccion, metodoPago, total } = req.body;
 
-    const p = result.rows[0];
-    res.json({
-      id: p.id,
-      nombre: p.nombre,
-      precio: p.precio,
-      estado: p.estado,
-      talla: p.talla,
-      imagenes: JSON.parse(p.imagenes)
+  if (!nombre || !email || !telefono || !direccion || !metodoPago || !total) {
+    return res.status(400).json({ success: false, message: 'Datos incompletos' });
+  }
+
+  try {
+    // Guardar en base de datos
+    await pool.query(
+      `INSERT INTO ventas (nombre, email, telefono, direccion, metodo_pago, total)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [nombre, email, telefono, direccion, metodoPago, total]
+    );
+
+    // Configuración del correo
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
     });
-  } catch (err) {
-    console.error("❌ Error al obtener producto:", err);
-    res.status(500).send("Error al obtener producto");
-  }
-});
 
-// ================== ENVÍO DE PEDIDOS ==================
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-app.post('/api/pedido', async (req, res) => {
-  try {
-    const { cliente, productos, total, deliveryType } = req.body;
-
-    const productosTexto = productos.map(p =>
-      `${p.name} - Talla: ${p.talla} - Cantidad: ${p.cantidad} - ₡${p.price}`
-    ).join('\n');
-
-    // 📧 Correo al cliente
-    const mailCliente = {
-      from: `"AVS Store" <${process.env.EMAIL_USER}>`,
-      to: cliente.email,
-      subject: 'Confirmación de tu pedido - AVS',
-      text: `
-Hola ${cliente.nombre},
-
-Gracias por tu compra en AVS ❤️
-
-📦 Detalles del pedido:
-${productosTexto}
-
-💰 Total: ₡${total.toLocaleString()}
-
-Tipo de entrega: ${deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"}
-
-Te contactaremos pronto para coordinar.
-
-— AVS
-      `,
-    };
-
-    // 📧 Correo al dueño
-    const mailOwner = {
-      from: `"AVS Store" <${process.env.EMAIL_USER}>`,
+    // Correo para la dueña
+    const ownerMail = {
+      from: process.env.EMAIL_USER,
       to: process.env.OWNER_EMAIL,
-      subject: '🛒 Nuevo pedido recibido',
-      text: `
-Nuevo pedido recibido:
-
-👤 Cliente: ${cliente.nombre} ${cliente.apellidos}
-📧 Email: ${cliente.email}
-📞 Teléfono: ${cliente.telefono}
-
-📦 Productos:
-${productosTexto}
-
-💰 Total: ₡${total.toLocaleString()}
-
-Tipo de entrega: ${deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"}
-
-Dirección:
-${cliente.direccion || "No aplica"}
-      `,
+      subject: '🛒 Nueva compra realizada',
+      html: `
+        <h2>Nueva compra</h2>
+        <p><strong>Nombre:</strong> ${nombre}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Teléfono:</strong> ${telefono}</p>
+        <p><strong>Dirección:</strong> ${direccion}</p>
+        <p><strong>Método de pago:</strong> ${metodoPago}</p>
+        <p><strong>Total:</strong> ₡${total}</p>
+      `
     };
 
-    await transporter.sendMail(mailCliente);
-    await transporter.sendMail(mailOwner);
+    // Correo para el cliente
+    const customerMail = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '✅ Confirmación de tu pedido',
+      html: `
+        <h2>Gracias por tu compra 💖</h2>
+        <p>Hola ${nombre},</p>
+        <p>Hemos recibido tu pedido correctamente.</p>
+        <p><strong>Total:</strong> ₡${total}</p>
+        <p><strong>Método de pago:</strong> ${metodoPago}</p>
+        <p>Nos comunicaremos contigo muy pronto.</p>
+        <br>
+        <p>✨ AVS Store ✨</p>
+      `
+    };
 
-    res.status(200).json({ message: 'Correos enviados correctamente' });
+    // Enviar correos
+    await transporter.sendMail(ownerMail);
+    await transporter.sendMail(customerMail);
 
+    res.json({ success: true });
   } catch (error) {
-    console.error('❌ Error enviando correos:', error);
-    res.status(500).json({ error: 'Error al enviar correos' });
+    console.error('❌ Error en finalizar-compra:', error);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
   }
 });
 
-// ================== SERVER ==================
+// ================== PUERTO ==================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
