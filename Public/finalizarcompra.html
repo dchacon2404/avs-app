@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Finalizar Compra - AVS</title>
   <link rel="stylesheet" href="css/finalizarcompra.css">
-
-  <!-- EmailJS SDK v4 -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    // Inicializar EmailJS con tu Public Key
-    emailjs.init('0AMhF_DTGwhxpoeRb');
-  </script>
 </head>
 <body>
   <header class="main-header">
@@ -147,7 +140,7 @@
 
     document.addEventListener("DOMContentLoaded", renderOrderSummary);
 
-    // ================== Manejo de envío de correo ==================
+    // ================== Envío del pedido al backend ==================
     document.getElementById("finalizar-pedido").addEventListener("click", async () => {
       const cart = getCart();
       if (cart.length === 0) {
@@ -179,34 +172,30 @@
       }
 
       const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
-      const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
 
-      // --- Enviar correo al cliente ---
-      emailjs.send("service_olesnyd", "template_wz6kcm9", {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email: cliente.email,
-        productos: productosTexto,
-        total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo cliente enviado:", res))
-        .catch(err => console.error("❌ Error correo cliente:", err));
+      try {
+        const res = await fetch('/api/pedido', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cliente,
+            productos: cart,
+            total,
+            deliveryType
+          })
+        });
 
-      // --- Enviar correo a tu novia ---
-      emailjs.send("service_olesnyd", "template_ycupd5q", {
-        cliente_nombre: cliente.nombre,
-        cliente_apellidos: cliente.apellidos,
-        email_cliente: cliente.email,
-        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
-        productos: productosTexto,
-        total: total.toLocaleString()
-      }).then(res => console.log("✅ Correo novia enviado:", res))
-        .catch(err => console.error("❌ Error correo novia:", err));
+        if (!res.ok) throw new Error("Error al enviar el pedido");
 
-      localStorage.removeItem("cart");
-      localStorage.removeItem("directBuy");
-      document.getElementById("success-popup").style.display = "flex";
+        localStorage.removeItem("cart");
+        localStorage.removeItem("directBuy");
+        document.getElementById("success-popup").style.display = "flex";
+
+      } catch (err) {
+        console.error("❌ Error:", err);
+        alert("Hubo un error enviando tu pedido. Intenta nuevamente.");
+      }
     });
   </script>
 </body>
 </html>
-
