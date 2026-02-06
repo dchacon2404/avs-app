@@ -4,141 +4,209 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Finalizar Compra - AVS</title>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #fff;
-      margin: 0;
-      padding: 20px;
-    }
+  <link rel="stylesheet" href="css/finalizarcompra.css">
 
-    .main-header {
-      text-align: center;
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .checkout-container {
-      max-width: 600px;
-      margin: auto;
-      background: #f9f9f9;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .checkout-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .checkout-container label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-    }
-
-    .checkout-container input,
-    .checkout-container select,
-    .checkout-container textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 14px;
-    }
-
-    .checkout-container button {
-      margin-top: 25px;
-      width: 100%;
-      padding: 12px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .checkout-container button:hover {
-      background-color: #333;
-    }
-  </style>
+  <!-- EmailJS SDK v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // Inicializar EmailJS con tu Public Key
+    emailjs.init('0AMhF_DTGwhxpoeRb');
+  </script>
 </head>
 <body>
+  <header class="main-header">
+    <a href="index.html" class="logo">AVS</a>
+  </header>
 
-  <div class="main-header">Finalizar Compra</div>
+  <main class="checkout-container">
+    <section class="form-section">
+      <h2>Entrega</h2>
 
-  <div class="checkout-container">
-    <h2>Datos del pedido</h2>
+      <div class="delivery-buttons">
+        <button type="button" class="delivery-btn active" data-type="pickup">Recolectar</button>
+        <button type="button" class="delivery-btn" data-type="shipping">Envío a domicilio</button>
+      </div>
 
-    <form id="checkoutForm">
-      <label>Nombre completo</label>
-      <input type="text" id="nombre" required>
+      <div id="pickup-form" class="delivery-form">
+        <h3>Datos para recoger</h3>
+        <div class="form-row">
+          <input id="nombre" type="text" placeholder="Nombre" required>
+          <input id="apellidos" type="text" placeholder="Apellidos" required>
+        </div>
+        <input id="telefono" type="text" placeholder="Teléfono" required>
+        <input id="email" type="email" placeholder="Correo electrónico" required>
+      </div>
 
-      <label>Correo electrónico</label>
-      <input type="email" id="email" required>
+      <div id="shipping-form" class="delivery-form hidden">
+        <h3>Datos de envío</h3>
+        <select>
+          <option value="CR">Costa Rica</option>
+        </select>
+        <div class="form-row">
+          <input id="nombre-envio" type="text" placeholder="Nombre" required>
+          <input id="apellidos-envio" type="text" placeholder="Apellidos" required>
+        </div>
+        <input id="direccion" type="text" placeholder="Dirección" required>
+        <input id="detalle" type="text" placeholder="Casa, apartamento, etc. (opcional)">
+        <div class="form-row">
+          <input id="provincia" type="text" placeholder="Provincia / Estado">
+          <input id="ciudad" type="text" placeholder="Ciudad">
+          <input id="codigo-postal" type="text" placeholder="Código Postal">
+        </div>
+        <input id="telefono-envio" type="text" placeholder="Teléfono" required>
+        <input id="email-envio" type="email" placeholder="Correo electrónico" required>
+      </div>
 
-      <label>Teléfono</label>
-      <input type="tel" id="telefono" required>
+      <section class="payment-section">
+        <h2>Pago</h2>
+        <p>Sinpe Móvil o Transferencia</p>
+        <p class="payment-info">
+          El pago se realiza por medio del Sinpe Móvil: Acuña Chavarría 86072876
+        </p>
+      </section>
 
-      <label>Dirección de envío</label>
-      <textarea id="direccion" rows="3" required></textarea>
+      <div class="btn-wrapper">
+        <button id="finalizar-pedido">Finalizar Pedido</button>
+      </div>
+    </section>
 
-      <label>Método de pago</label>
-      <select id="metodoPago" required>
-        <option value="">Selecciona uno</option>
-        <option value="SINPE">SINPE</option>
-        <option value="Efectivo">Efectivo</option>
-      </select>
+    <aside class="summary-section">
+      <h2>Resumen del pedido</h2>
+      <div id="order-summary"></div>
+      <p class="total">Total: <span id="final-total">₡0</span></p>
+    </aside>
+  </main>
 
-      <label>Total a pagar (₡)</label>
-      <input type="text" id="total" readonly>
-
-      <button type="submit">Finalizar pedido</button>
-    </form>
+  <div id="success-popup" class="popup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">&times;</span>
+      <h2>Pedido realizado exitosamente</h2>
+      <p>Gracias por tu compra. Te enviamos la factura por correo.</p>
+    </div>
   </div>
 
   <script>
-    // Simulación de total (puedes cambiarlo si ya lo traes del carrito)
-    const total = localStorage.getItem('totalCompra') || '0';
-    document.getElementById('total').value = total;
+    // ================== Manejo de formularios ==================
+    const deliveryButtons = document.querySelectorAll('.delivery-btn');
+    const pickupForm = document.getElementById('pickup-form');
+    const shippingForm = document.getElementById('shipping-form');
 
-    document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+    deliveryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        deliveryButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(btn.dataset.type === 'pickup') {
+          pickupForm.classList.remove('hidden');
+          shippingForm.classList.add('hidden');
+        } else {
+          shippingForm.classList.remove('hidden');
+          pickupForm.classList.add('hidden');
+        }
+      });
+    });
 
-      const data = {
-        nombre: document.getElementById('nombre').value,
-        email: document.getElementById('email').value,
-        telefono: document.getElementById('telefono').value,
-        direccion: document.getElementById('direccion').value,
-        metodoPago: document.getElementById('metodoPago').value,
-        total: document.getElementById('total').value
+    function closePopup() {
+      document.getElementById("success-popup").style.display = "none";
+      window.location.href = "index.html";
+    }
+
+    function getCart() {
+      const directBuy = JSON.parse(localStorage.getItem("directBuy"));
+      if (directBuy) return directBuy;
+      return JSON.parse(localStorage.getItem("cart")) || [];
+    }
+
+    function renderOrderSummary() {
+      const cart = getCart();
+      const container = document.getElementById("order-summary");
+      container.innerHTML = "";
+      if (cart.length === 0) {
+        container.innerHTML = "<p>Tu carrito está vacío.</p>";
+        document.getElementById("final-total").textContent = "₡0";
+        return;
+      }
+      let total = 0;
+      cart.forEach(item => {
+        const subtotal = Number(item.price) * item.cantidad;
+        total += subtotal;
+        const div = document.createElement("div");
+        div.classList.add("product");
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="product-info">
+            <h4>${item.name}</h4>
+            <p>Talla: ${item.talla}</p>
+            <p>Cantidad: ${item.cantidad}</p>
+            <p>Subtotal: ₡${subtotal.toLocaleString()}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById("final-total").textContent = "₡" + total.toLocaleString();
+    }
+
+    document.addEventListener("DOMContentLoaded", renderOrderSummary);
+
+    // ================== Manejo de envío de correo ==================
+    document.getElementById("finalizar-pedido").addEventListener("click", async () => {
+      const cart = getCart();
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      const deliveryType = document.querySelector('.delivery-btn.active').dataset.type;
+
+      const cliente = deliveryType === "pickup" ? {
+        nombre: document.getElementById("nombre").value.trim(),
+        apellidos: document.getElementById("apellidos").value.trim(),
+        telefono: document.getElementById("telefono").value.trim(),
+        email: document.getElementById("email").value.trim()
+      } : {
+        nombre: document.getElementById("nombre-envio").value.trim(),
+        apellidos: document.getElementById("apellidos-envio").value.trim(),
+        telefono: document.getElementById("telefono-envio").value.trim(),
+        email: document.getElementById("email-envio").value.trim(),
+        direccion: document.getElementById("direccion").value.trim(),
+        provincia: document.getElementById("provincia").value.trim(),
+        ciudad: document.getElementById("ciudad").value.trim(),
+        codigoPostal: document.getElementById("codigo-postal").value.trim()
       };
 
-      try {
-        const response = await fetch('/api/finalizar-compra', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert('¡Pedido enviado con éxito! 🎉');
-          window.location.href = '/';
-        } else {
-          alert('❌ Error al procesar el pedido.');
-        }
-      } catch (error) {
-        console.error(error);
-        alert('❌ Error de conexión con el servidor.');
+      if (!cliente.nombre || !cliente.apellidos || !cliente.telefono || !cliente.email) {
+        alert("Por favor completa todos los campos obligatorios.");
+        return;
       }
+
+      const total = cart.reduce((sum, p) => sum + (Number(p.price) * p.cantidad), 0);
+      const productosTexto = cart.map(p => `${p.name} (${p.cantidad})`).join(", ");
+
+      // --- Enviar correo al cliente ---
+      emailjs.send("service_olesnyd", "template_wz6kcm9", {
+        cliente_nombre: cliente.nombre,
+        cliente_apellidos: cliente.apellidos,
+        email: cliente.email,
+        productos: productosTexto,
+        total: total.toLocaleString()
+      }).then(res => console.log("✅ Correo cliente enviado:", res))
+        .catch(err => console.error("❌ Error correo cliente:", err));
+
+      // --- Enviar correo a tu novia ---
+      emailjs.send("service_olesnyd", "template_ycupd5q", {
+        cliente_nombre: cliente.nombre,
+        cliente_apellidos: cliente.apellidos,
+        email_cliente: cliente.email,
+        deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio",
+        productos: productosTexto,
+        total: total.toLocaleString()
+      }).then(res => console.log("✅ Correo novia enviado:", res))
+        .catch(err => console.error("❌ Error correo novia:", err));
+
+      localStorage.removeItem("cart");
+      localStorage.removeItem("directBuy");
+      document.getElementById("success-popup").style.display = "flex";
     });
   </script>
-
 </body>
 </html>
+

@@ -10,82 +10,51 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'Public')));
 
-// Página principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public', 'index.html'));
-});
+// ================== Rutas ==================
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'index.html')));
+app.get('/Producto.html', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Producto.html')));
 
-// ================== RUTA FINALIZAR COMPRA ==================
-app.post('/api/finalizar-compra', async (req, res) => {
-  const { nombre, email, telefono, direccion, metodoPago, total } = req.body;
-
-  if (!nombre || !email || !telefono || !direccion || !metodoPago || !total) {
-    return res.status(400).json({ success: false, message: 'Datos incompletos' });
-  }
-
+// ================== PRODUCTOS ==================
+app.get('/api/productos', async (req, res) => {
   try {
-    // Guardar en base de datos
-    await pool.query(
-      `INSERT INTO ventas (nombre, email, telefono, direccion, metodo_pago, total)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [nombre, email, telefono, direccion, metodoPago, total]
-    );
-
-    // Configuración del correo
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    // Correo para la dueña
-    const ownerMail = {
-      from: process.env.EMAIL_USER,
-      to: process.env.OWNER_EMAIL,
-      subject: '🛒 Nueva compra realizada',
-      html: `
-        <h2>Nueva compra</h2>
-        <p><strong>Nombre:</strong> ${nombre}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Teléfono:</strong> ${telefono}</p>
-        <p><strong>Dirección:</strong> ${direccion}</p>
-        <p><strong>Método de pago:</strong> ${metodoPago}</p>
-        <p><strong>Total:</strong> ₡${total}</p>
-      `
-    };
-
-    // Correo para el cliente
-    const customerMail = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: '✅ Confirmación de tu pedido',
-      html: `
-        <h2>Gracias por tu compra 💖</h2>
-        <p>Hola ${nombre},</p>
-        <p>Hemos recibido tu pedido correctamente.</p>
-        <p><strong>Total:</strong> ₡${total}</p>
-        <p><strong>Método de pago:</strong> ${metodoPago}</p>
-        <p>Nos comunicaremos contigo muy pronto.</p>
-        <br>
-        <p>✨ AVS Store ✨</p>
-      `
-    };
-
-    // Enviar correos
-    await transporter.sendMail(ownerMail);
-    await transporter.sendMail(customerMail);
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('❌ Error en finalizar-compra:', error);
-    res.status(500).json({ success: false, message: 'Error del servidor' });
+    const result = await pool.query('SELECT * FROM productos');
+    const productos = result.rows.map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      precio: p.precio,
+      estado: p.estado,
+      talla: p.talla,
+      imagenes: JSON.parse(p.imagenes)
+    }));
+    res.json(productos);
+  } catch (err) {
+    console.error("❌ Error al obtener productos:", err);
+    res.status(500).send("Error al obtener productos");
   }
 });
 
-// ================== PUERTO ==================
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.get('/api/productos/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM productos WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).send('Producto no encontrado');
+
+    const p = result.rows[0];
+    res.json({
+      id: p.id,
+      nombre: p.nombre,
+      precio: p.precio,
+      estado: p.estado,
+      talla: p.talla,
+      imagenes: JSON.parse(p.imagenes)
+    });
+  } catch (err) {
+    console.error("❌ Error al obtener producto:", err);
+    res.status(500).send("Error al obtener producto");
+  }
 });
+
+
+
+// ================== SERVER ==================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
