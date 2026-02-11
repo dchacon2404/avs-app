@@ -201,23 +201,13 @@
       .then(res => console.log("✅ Correo novia enviado:", res))
       .catch(err => console.error("❌ Error correo novia:", err));
 
-    // 🔥 MARCAR PRODUCTOS COMO VENDIDOS (pero NO se quitan de la tienda)
-    for (const item of cart) {
-      if (item.id) {
-        try {
-          await fetch(`https://avs-app.onrender.com/api/productos/${item.id}/vender`, {
-            method: "PUT"
-          });
-        } catch (error) {
-          console.error("❌ Error marcando producto como vendido:", error);
-        }
-      }
-    }
+    // ❌ YA NO se marca como vendido, ni se elimina, ni se modifica nada en la tienda
 
     localStorage.removeItem("cart");
     localStorage.removeItem("directBuy");
     document.getElementById("success-popup").style.display = "flex";
   });
-  </script>
+</script>
+
 </body>
 </html>
