@@ -154,17 +154,16 @@ body {
 
 .banner-vendido {
   position: absolute;
-  top: 5px;
-  left: 5px;
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-family: 'Xanh Mono', monospace;
-  font-size: 0.8rem;
-  z-index: 10;
+  top: 15px;
+  left: 15px;
+  background: transparent;
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
+
 
 
 /* ==========================
