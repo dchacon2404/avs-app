@@ -116,6 +116,7 @@
 
   function renderOrderSummary() {
     const cart = getCart();
+    console.log("🛒 Carrito completo:", cart);
     const container = document.getElementById("order-summary");
     container.innerHTML = "";
     if (cart.length === 0) {
