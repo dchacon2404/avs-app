@@ -17,7 +17,7 @@ app.get('/Producto.html', (req, res) => res.sendFile(path.join(__dirname, 'Publi
 // 🔹 Obtener solo productos disponibles
 app.get('/api/productos', async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM productos WHERE estado = true");
+    const result = await pool.query("SELECT * FROM productos");
     const productos = result.rows.map(p => ({
       id: p.id,
       nombre: p.nombre,
@@ -37,9 +37,10 @@ app.get('/api/productos/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      "SELECT * FROM productos WHERE id = $1 AND estado = true",
-      [id]
+    "SELECT * FROM productos WHERE id = $1",
+    [id]
     );
+
     if (result.rows.length === 0) {
       return res.status(404).send("Producto no disponible");
     }
