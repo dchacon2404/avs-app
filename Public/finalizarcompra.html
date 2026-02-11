@@ -205,9 +205,9 @@
     for (const item of cart) {
       if (item.id) {
         try {
-          await fetch(`http://localhost:3000/api/productos/${item.id}/vender`, {
-            method: "PUT"
-          });
+          await fetch(`https://avs-app.onrender.com/api/productos/${item.id}/vender`, {
+          method: "PUT"
+        });
         } catch (error) {
           console.error("❌ Error marcando producto como vendido:", error);
         }
