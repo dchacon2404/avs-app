@@ -84,7 +84,7 @@
     </div>
   </div>
 
-  <script>
+<script>
   const deliveryButtons = document.querySelectorAll('.delivery-btn');
   const pickupForm = document.getElementById('pickup-form');
   const shippingForm = document.getElementById('shipping-form');
@@ -201,13 +201,27 @@
       .then(res => console.log("✅ Correo novia enviado:", res))
       .catch(err => console.error("❌ Error correo novia:", err));
 
-    // ❌ YA NO se marca como vendido, ni se elimina, ni se modifica nada en la tienda
+    // 🔥 MARCAR PRODUCTOS COMO VENDIDOS (pero NO se eliminan del Drop)
+    for (const item of cart) {
+      if (item.id) {
+        try {
+          await fetch(`https://avs-app.onrender.com/api/productos/${item.id}/vender`, {
+            method: "PUT"
+          });
+        } catch (error) {
+          console.error("❌ Error marcando producto como vendido:", error);
+        }
+      }
+    }
 
-    localStorage.removeItem("cart");
-    localStorage.removeItem("directBuy");
+    // ❌ YA NO BORRAMOS EL CARRITO AQUÍ (si quieres, luego lo ajustamos)
+    // localStorage.removeItem("cart");
+    // localStorage.removeItem("directBuy");
+
     document.getElementById("success-popup").style.display = "flex";
   });
 </script>
+
 
 </body>
 </html>
