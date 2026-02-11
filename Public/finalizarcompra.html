@@ -1,4 +1,90 @@
-<script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finalizar Compra - AVS</title>
+  <link rel="stylesheet" href="css/finalizarcompra.css">
+
+  <!-- EmailJS SDK v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init('0AMhF_DTGwhxpoeRb');
+  </script>
+</head>
+<body>
+  <header class="main-header">
+    <a href="index.html" class="logo">AVS</a>
+  </header>
+
+  <main class="checkout-container">
+    <section class="form-section">
+      <h2>Entrega</h2>
+
+      <div class="delivery-buttons">
+        <button type="button" class="delivery-btn active" data-type="pickup">Recolectar</button>
+        <button type="button" class="delivery-btn" data-type="shipping">Envío a domicilio</button>
+      </div>
+
+      <div id="pickup-form" class="delivery-form">
+        <h3>Datos para recoger</h3>
+        <div class="form-row">
+          <input id="nombre" type="text" placeholder="Nombre" required>
+          <input id="apellidos" type="text" placeholder="Apellidos" required>
+        </div>
+        <input id="telefono" type="text" placeholder="Teléfono" required>
+        <input id="email" type="email" placeholder="Correo electrónico" required>
+      </div>
+
+      <div id="shipping-form" class="delivery-form hidden">
+        <h3>Datos de envío</h3>
+        <select>
+          <option value="CR">Costa Rica</option>
+        </select>
+        <div class="form-row">
+          <input id="nombre-envio" type="text" placeholder="Nombre" required>
+          <input id="apellidos-envio" type="text" placeholder="Apellidos" required>
+        </div>
+        <input id="direccion" type="text" placeholder="Dirección" required>
+        <input id="detalle" type="text" placeholder="Casa, apartamento, etc. (opcional)">
+        <div class="form-row">
+          <input id="provincia" type="text" placeholder="Provincia / Estado">
+          <input id="ciudad" type="text" placeholder="Ciudad">
+          <input id="codigo-postal" type="text" placeholder="Código Postal">
+        </div>
+        <input id="telefono-envio" type="text" placeholder="Teléfono" required>
+        <input id="email-envio" type="email" placeholder="Correo electrónico" required>
+      </div>
+
+      <section class="payment-section">
+        <h2>Pago</h2>
+        <p>Sinpe Móvil o Transferencia</p>
+        <p class="payment-info">
+          El pago se realiza por medio del Sinpe Móvil: Acuña Chavarría 86072876
+        </p>
+      </section>
+
+      <div class="btn-wrapper">
+        <button id="finalizar-pedido">Finalizar Pedido</button>
+      </div>
+    </section>
+
+    <aside class="summary-section">
+      <h2>Resumen del pedido</h2>
+      <div id="order-summary"></div>
+      <p class="total">Total: <span id="final-total">₡0</span></p>
+    </aside>
+  </main>
+
+  <div id="success-popup" class="popup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">&times;</span>
+      <h2>Pedido realizado exitosamente</h2>
+      <p>Gracias por tu compra. Te enviamos la factura por correo.</p>
+    </div>
+  </div>
+
+  <script>
   const deliveryButtons = document.querySelectorAll('.delivery-btn');
   const pickupForm = document.getElementById('pickup-form');
   const shippingForm = document.getElementById('shipping-form');
@@ -132,3 +218,5 @@
     document.getElementById("success-popup").style.display = "flex";
   });
 </script>
+</body>
+</html>
