@@ -1,38 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Detalle del Producto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/NuevoDrop.css">
-</head>
-<body class="page-product">
-
-<header class="navbar">
-  <div class="nav-left">
-    <a href="index.html">Inicio</a>
-    <a href="NuevoDrop.html">Drop</a>
-    <a href="contacto.html">Contacto</a>
-  </div>
-  <h1 class="logo">AVS</h1>
-</header>
-
-<section class="product-detail">
-  <div class="detail-img">
-    <div class="slider" id="slider"></div>
-    <div id="banner-vendido" class="banner-vendido" style="display:none;">VENDIDO</div>
-  </div>
-
-  <div class="detail-info">
-    <h2 id="prod-name">Nombre del Producto</h2>
-    <p id="prod-price" class="price">₡0.00</p>
-    <p id="prod-talla"></p>
-    <button id="add-cart" class="btn-cart">Agregar al carrito</button>
-    <button class="btn-buy">Comprar ahora</button>
-  </div>
-</section>
-
 <script>
 async function cargarProducto() {
   const params = new URLSearchParams(window.location.search);
@@ -64,8 +29,8 @@ async function cargarProducto() {
     const buyBtn = document.querySelector('.btn-buy');
     const banner = document.getElementById('banner-vendido');
 
-    // 🔒 VALIDACIÓN CLAVE
-    if (producto.estado === false) {
+    // 🔒 VALIDACIÓN CLAVE (con "F")
+    if (producto.estado === "F") {
       banner.style.display = 'block';
       addCartBtn.disabled = true;
       buyBtn.disabled = true;
@@ -115,7 +80,7 @@ document.getElementById("add-cart").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === false) {
+  if (window.productoActual.estado === "F") {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -153,7 +118,7 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === false) {
+  if (window.productoActual.estado === "F") {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -173,7 +138,3 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   window.location.href = "finalizarcompra.html";
 });
 </script>
-
-
-</body>
-</html>
