@@ -64,8 +64,8 @@ async function cargarProducto() {
     const buyBtn = document.querySelector('.btn-buy');
     const banner = document.getElementById('banner-vendido');
 
-    // 🔒 VALIDACIÓN CLAVE (con "F")
-    if (producto.estado === "F") {
+    // 🔒 VALIDACIÓN CLAVE
+    if (producto.estado === false) {
       banner.style.display = 'block';
       addCartBtn.disabled = true;
       buyBtn.disabled = true;
@@ -115,7 +115,7 @@ document.getElementById("add-cart").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === "F") {
+  if (window.productoActual.estado === false) {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -153,7 +153,7 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === "F") {
+  if (window.productoActual.estado === false) {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -173,6 +173,5 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   window.location.href = "finalizarcompra.html";
 });
 </script>
-
 </body>
 </html>

@@ -57,37 +57,20 @@ async function mostrarProductos() {
 
       const imgSrc = prod.imagenes[0].startsWith("/") ? prod.imagenes[0].slice(1) : prod.imagenes[0];
 
-      const vendido = prod.estado === "F";
-
       card.innerHTML = `
-        ${vendido 
-          ? `
-            <div class="card-link disabled">
-              <div class="img-container">
-                <img src="${imgSrc}" alt="${prod.nombre}">
-                <div class="banner-vendido">VENDIDO</div>
-              </div>
-              <h3>${prod.nombre}</h3>
-              <div class="price">₡${prod.precio}</div>
-              <div class="talla">Talla: ${prod.talla}</div>
-            </div>
-          `
-          : `
-            <a href="producto.html?id=${prod.id}" class="card-link">
-              <div class="img-container">
-                <img src="${imgSrc}" alt="${prod.nombre}">
-              </div>
-              <h3>${prod.nombre}</h3>
-              <div class="price">₡${prod.precio}</div>
-              <div class="talla">Talla: ${prod.talla}</div>
-            </a>
-          `
-        }
+        <a href="producto.html?id=${prod.id}" class="card-link">
+          <div class="img-container">
+            <img src="${imgSrc}" alt="${prod.nombre}">
+            ${prod.estado === 'Vendido' ? '<div class="banner-vendido">VENDIDO</div>' : ''}
+          </div>
+          <h3>${prod.nombre}</h3>
+          <div class="price">₡${prod.precio}</div>
+          <div class="talla">Talla: ${prod.talla}</div>
+        </a>
       `;
 
-      if (vendido) {
+      if (prod.estado === 'Vendido') {
         card.style.opacity = '0.6';
-        card.style.pointerEvents = 'none'; // 🔒 Bloquea clics
       }
 
       container.appendChild(card);
