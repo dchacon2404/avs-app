@@ -38,9 +38,7 @@ async function cargarProducto() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
-  if (!id) {
-    return;
-  }
+  if (!id) return;
 
   try {
     const res = await fetch(`https://avs-app.onrender.com/api/productos/${id}`);
@@ -67,10 +65,12 @@ async function cargarProducto() {
     const banner = document.getElementById('banner-vendido');
 
     // 🔒 VALIDACIÓN CLAVE
-    if (producto.estado === false || producto.estado === 'false' || producto.estado === 'Vendido') {
+    if (producto.estado === false) {
       banner.style.display = 'block';
       addCartBtn.disabled = true;
       buyBtn.disabled = true;
+      addCartBtn.textContent = "Vendido";
+      buyBtn.textContent = "Vendido";
       addCartBtn.style.opacity = '0.5';
       buyBtn.style.opacity = '0.5';
       addCartBtn.style.cursor = 'not-allowed';
@@ -79,6 +79,8 @@ async function cargarProducto() {
       banner.style.display = 'none';
       addCartBtn.disabled = false;
       buyBtn.disabled = false;
+      addCartBtn.textContent = "Agregar al carrito";
+      buyBtn.textContent = "Comprar ahora";
       addCartBtn.style.opacity = '1';
       buyBtn.style.opacity = '1';
       addCartBtn.style.cursor = 'pointer';
@@ -113,7 +115,7 @@ document.getElementById("add-cart").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === false || window.productoActual.estado === 'false' || window.productoActual.estado === 'Vendido') {
+  if (window.productoActual.estado === false) {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -151,7 +153,7 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   if (!window.productoActual) return;
 
   // 🚫 Bloqueo extra por seguridad
-  if (window.productoActual.estado === false || window.productoActual.estado === 'false' || window.productoActual.estado === 'Vendido') {
+  if (window.productoActual.estado === false) {
     alert("Este producto ya fue vendido.");
     return;
   }
@@ -171,6 +173,7 @@ document.querySelector(".btn-buy").addEventListener("click", () => {
   window.location.href = "finalizarcompra.html";
 });
 </script>
+
 
 </body>
 </html>
