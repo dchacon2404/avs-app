@@ -53,6 +53,27 @@ app.get('/api/productos/:id', async (req, res) => {
   }
 });
 
+// ================== MARCAR PRODUCTO COMO VENDIDO ==================
+app.put('/api/productos/:id/vender', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      'UPDATE productos SET estado = false WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.json({ message: 'Producto marcado como vendido', producto: result.rows[0] });
+  } catch (error) {
+    console.error('❌ Error al marcar producto como vendido:', error);
+    res.status(500).json({ error: 'Error al marcar producto como vendido' });
+  }
+});
+
 
 
 // ================== SERVER ==================
