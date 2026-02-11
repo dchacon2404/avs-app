@@ -21,13 +21,12 @@
 <section class="product-detail">
   <div class="detail-img">
     <div class="slider" id="slider"></div>
-    <div id="banner-vendido" class="banner-vendido">VENDIDO</div>
+    <div id="banner-vendido" class="banner-vendido" style="display:none;">VENDIDO</div>
   </div>
 
   <div class="detail-info">
     <h2 id="prod-name">Nombre del Producto</h2>
     <p id="prod-price" class="price">₡0.00</p>
-    <p id="prod-estado"></p>
     <p id="prod-talla"></p>
     <button id="add-cart" class="btn-cart">Agregar al carrito</button>
     <button class="btn-buy">Comprar ahora</button>
@@ -40,12 +39,11 @@ async function cargarProducto() {
   const id = params.get('id');
 
   if (!id) {
-    document.getElementById('prod-estado').textContent = 'No se indicó un producto.';
     return;
   }
 
   try {
-    const res = await fetch(`/api/productos/${id}`);
+    const res = await fetch(`https://avs-app.onrender.com/api/productos/${id}`);
     const producto = await res.json();
 
     if (!producto || !producto.imagenes) throw new Error('Producto no encontrado');
@@ -62,31 +60,35 @@ async function cargarProducto() {
 
     document.getElementById('prod-name').textContent = producto.nombre;
     document.getElementById('prod-price').textContent = `₡${Number(producto.precio).toLocaleString()}`;
-    document.getElementById('prod-estado').textContent = producto.estado;
     document.getElementById('prod-talla').textContent = `Talla: ${producto.talla || 'Única'}`;
 
     const addCartBtn = document.getElementById('add-cart');
     const buyBtn = document.querySelector('.btn-buy');
+    const banner = document.getElementById('banner-vendido');
 
-    if(producto.estado === 'Vendido'){
-      document.getElementById('banner-vendido').style.display = 'block';
+    // 🔒 VALIDACIÓN CLAVE
+    if (producto.estado === false || producto.estado === 'false' || producto.estado === 'Vendido') {
+      banner.style.display = 'block';
       addCartBtn.disabled = true;
       buyBtn.disabled = true;
-      addCartBtn.style.opacity = '0.6';
-      buyBtn.style.opacity = '0.6';
+      addCartBtn.style.opacity = '0.5';
+      buyBtn.style.opacity = '0.5';
+      addCartBtn.style.cursor = 'not-allowed';
+      buyBtn.style.cursor = 'not-allowed';
     } else {
-      document.getElementById('banner-vendido').style.display = 'none';
+      banner.style.display = 'none';
       addCartBtn.disabled = false;
       buyBtn.disabled = false;
       addCartBtn.style.opacity = '1';
       buyBtn.style.opacity = '1';
+      addCartBtn.style.cursor = 'pointer';
+      buyBtn.style.cursor = 'pointer';
     }
 
     window.productoActual = producto;
 
   } catch(err){
     console.error(err);
-    document.getElementById('prod-estado').textContent = 'No se pudo cargar el producto';
   }
 }
 
@@ -106,9 +108,15 @@ function updateCartCount() {
   localStorage.setItem("cartCount", totalItems);
 }
 
-// ✅ Agregar al carrito
+// 🛒 Agregar al carrito
 document.getElementById("add-cart").addEventListener("click", () => {
-  if(!window.productoActual) return;
+  if (!window.productoActual) return;
+
+  // 🚫 Bloqueo extra por seguridad
+  if (window.productoActual.estado === false || window.productoActual.estado === 'false' || window.productoActual.estado === 'Vendido') {
+    alert("Este producto ya fue vendido.");
+    return;
+  }
 
   const producto = window.productoActual;
   const name = producto.nombre;
@@ -119,7 +127,7 @@ document.getElementById("add-cart").addEventListener("click", () => {
   let cart = getCart();
   const index = cart.findIndex(p => p.id === producto.id);
 
-  if(index >= 0){
+  if (index >= 0) {
     cart[index].cantidad++;
   } else {
     cart.push({ 
@@ -138,9 +146,15 @@ document.getElementById("add-cart").addEventListener("click", () => {
   window.location.href = "NuevoDrop.html";
 });
 
-// ✅ Comprar ahora directo a finalizar compra
+// ⚡ Comprar ahora directo
 document.querySelector(".btn-buy").addEventListener("click", () => {
   if (!window.productoActual) return;
+
+  // 🚫 Bloqueo extra por seguridad
+  if (window.productoActual.estado === false || window.productoActual.estado === 'false' || window.productoActual.estado === 'Vendido') {
+    alert("Este producto ya fue vendido.");
+    return;
+  }
 
   const producto = {
     id: window.productoActual.id,
