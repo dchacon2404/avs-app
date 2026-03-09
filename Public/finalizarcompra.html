@@ -181,7 +181,17 @@
 
     console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
-    const templateParams = {
+    const templateParamsCliente = {
+      nombre: cliente.nombre,
+      apellidos: cliente.apellidos,
+      telefono: cliente.telefono,
+      email: cliente.email,
+      productos: productosTexto,
+      total: total.toLocaleString(),
+      deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
+    };
+
+    const templateParamsEmpresa = {
       cliente_nombre: cliente.nombre,
       cliente_apellidos: cliente.apellidos,
       telefono: cliente.telefono,
@@ -192,12 +202,12 @@
     };
 
     // --- Correo al cliente ---
-    emailjs.send("service_olesnyd", "template_wz6kcm9", templateParams)
+    emailjs.send("service_olesnyd", "template_wz6kcm9", templateParamsCliente)
       .then(res => console.log("✅ Correo cliente enviado:", res))
       .catch(err => console.error("❌ Error correo cliente:", err));
 
     // --- Correo a tu novia ---
-    emailjs.send("service_olesnyd", "template_ycupd5q", templateParams)
+    emailjs.send("service_olesnyd", "template_ycupd5q", templateParamsEmpresa)
       .then(res => console.log("✅ Correo novia enviado:", res))
       .catch(err => console.error("❌ Error correo novia:", err));
 
@@ -220,6 +230,6 @@
     localStorage.removeItem("directBuy");
     document.getElementById("success-popup").style.display = "flex";
   });
-</script>
+  </script>
 </body>
 </html>
