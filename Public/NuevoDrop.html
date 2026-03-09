@@ -9,121 +9,137 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header class="main-header">
-
     <nav class="navbar">
       <div class="nav-left">
         <a href="index.html">Inicio</a>
         <a href="NuevoDrop.html" class="active">Drop</a>
         <a href="contacto.html">Contacto</a>
       </div>
-
-      <div class="nav-center">
-        <h1 class="logo">AVS</h1>
-      </div>
-
+      <a href="index.html" class="logo">AVS</a>
       <div class="nav-right">
         <img src="images/buscar.png" alt="Buscar">
         <img src="images/agregar-usuario.png" alt="Usuario">
-        <a href="carrito.html">
+        <a href="carrito.html" style="position:relative;">
           <img src="images/anadir-al-carrito.png" alt="Carrito">
+          <span class="cart-badge" id="cart-badge"></span>
         </a>
       </div>
     </nav>
   </header>
 
-  <!-- Catálogo -->
   <section class="drop-section">
-    <div class="drop-grid">
-      <!-- Los productos se cargan dinámicamente -->
+    <div class="drop-section-header">
+      <span class="section-label">Colección actual</span>
+      <h2>Nuevo Drop</h2>
+    </div>
+    <div class="drop-grid" id="drop-grid">
+      <!-- productos dinámicos -->
     </div>
   </section>
 
   <script>
-const container = document.querySelector('.drop-grid');
+    const container = document.getElementById('drop-grid');
 
-async function mostrarProductos() {
-  container.innerHTML = '';
+    function getCart() {
+      return JSON.parse(localStorage.getItem("cart")) || [];
+    }
 
-  try {
-    const res = await fetch('/api/productos');
-    const productos = await res.json();
+    function isInCart(productId) {
+      return getCart().some(item => item.id === productId);
+    }
 
-    productos.forEach(prod => {
-      const card = document.createElement('div');
-      card.className = 'product-card';
+    function addToCart(prod, imgSrc) {
+      const cart = getCart();
+      if (isInCart(prod.id)) return;
+      cart.push({
+        id: prod.id,
+        name: prod.nombre,
+        price: prod.precio,
+        img: imgSrc,
+        talla: prod.talla,
+        cantidad: 1
+      });
+      localStorage.setItem("cart", JSON.stringify(cart));
+      const total = cart.reduce((sum, p) => sum + p.cantidad, 0);
+      localStorage.setItem("cartCount", total);
+      updateBadge(total);
+    }
 
-      const imgSrc = prod.imagenes[0].startsWith("/") ? prod.imagenes[0].slice(1) : prod.imagenes[0];
+    function updateBadge(count) {
+      const badge = document.getElementById('cart-badge');
+      if (!badge) return;
+      badge.textContent = count > 0 ? count : '';
+    }
 
-      if (prod.estado === false) {
-        // ❌ PRODUCTO VENDIDO
-        card.innerHTML = `
-          <div class="card-link sold">
-            <div class="img-container">
-              <img src="${imgSrc}" alt="${prod.nombre}">
-              <div class="banner-vendido">AGOTADO</div>
-            </div>
-            <h3>${prod.nombre}</h3>
-            <div class="price">₡${prod.precio}</div>
-            <div class="talla">Talla: ${prod.talla}</div>
-          </div>
-        `;
-        card.style.opacity = '0.6';
-        card.style.pointerEvents = 'none';
-      } else {
-        // ✅ PRODUCTO DISPONIBLE
-        card.innerHTML = `
-          <a href="producto.html?id=${prod.id}" class="card-link">
-            <div class="img-container">
-              <img src="${imgSrc}" alt="${prod.nombre}">
-            </div>
-            <h3>${prod.nombre}</h3>
-            <div class="price">₡${prod.precio}</div>
-            <div class="talla">Talla: ${prod.talla}</div>
-          </a>
-        `;
+    async function mostrarProductos() {
+      container.innerHTML = '';
+      try {
+        const res = await fetch('/api/productos');
+        const productos = await res.json();
+
+        productos.forEach(prod => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+
+          const imgSrc = prod.imagenes[0].startsWith("/") ? prod.imagenes[0].slice(1) : prod.imagenes[0];
+          const enCarrito = isInCart(prod.id);
+
+          if (prod.estado === false) {
+            card.innerHTML = `
+              <div class="card-link sold">
+                <div class="img-container">
+                  <img src="${imgSrc}" alt="${prod.nombre}">
+                  <div class="banner-vendido">AGOTADO</div>
+                </div>
+                <h3>${prod.nombre}</h3>
+                <div class="price">₡${prod.precio}</div>
+                <div class="talla">Talla: ${prod.talla}</div>
+              </div>
+            `;
+            card.style.opacity = '0.6';
+            card.style.pointerEvents = 'none';
+          } else {
+            card.innerHTML = `
+              <a href="producto.html?id=${prod.id}" class="card-link">
+                <div class="img-container">
+                  <img src="${imgSrc}" alt="${prod.nombre}">
+                  <div class="card-overlay"><span>Ver producto</span></div>
+                </div>
+                <h3>${prod.nombre}</h3>
+                <div class="price">₡${prod.precio}</div>
+                <div class="talla">Talla: ${prod.talla}</div>
+              </a>
+              <button class="btn-add-cart ${enCarrito ? 'in-cart' : ''}" data-id="${prod.id}">
+                ${enCarrito ? 'En carrito' : 'Añadir al carrito'}
+              </button>
+            `;
+
+            const btn = card.querySelector('.btn-add-cart');
+            if (!enCarrito) {
+              btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                addToCart(prod, imgSrc);
+                btn.textContent = 'En carrito';
+                btn.classList.add('in-cart');
+              });
+            }
+          }
+
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error('Error cargando productos:', err);
+        container.innerHTML = '<p style="padding:40px;color:#7A7468;">Error cargando productos. Intenta más tarde.</p>';
       }
+    }
 
-      container.appendChild(card);
+    document.addEventListener("DOMContentLoaded", () => {
+      updateBadge(localStorage.getItem("cartCount") || 0);
+      mostrarProductos();
     });
-
-  } catch (err) {
-    console.error('Error cargando productos:', err);
-    container.innerHTML = '<p>Error cargando productos. Intenta más tarde.</p>';
-  }
-}
-
-mostrarProductos();
-
-// ====== Contador del carrito ======
-function showCartCount() {
-  const count = localStorage.getItem("cartCount") || 0;
-  let cartIcon = document.querySelector('.nav-right a:last-child');
-  if (!cartIcon) return;
-
-  let badge = cartIcon.querySelector(".cart-badge");
-  if (!badge) {
-    badge = document.createElement("span");
-    badge.classList.add("cart-badge");
-    badge.style.position = "absolute";
-    badge.style.top = "0px";
-    badge.style.right = "0px";
-    badge.style.background = "white";
-    badge.style.color = "black";
-    badge.style.fontSize = "12px";
-    badge.style.padding = "2px 6px";
-    badge.style.borderRadius = "50%";
-    badge.style.fontWeight = "bold";
-    cartIcon.style.position = 'relative';
-    cartIcon.appendChild(badge);
-  }
-
-  badge.textContent = count;
-}
-
-document.addEventListener("DOMContentLoaded", showCartCount);
-</script>
+  </script>
 
 </body>
 </html>

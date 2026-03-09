@@ -13,6 +13,7 @@
   --gold-light: #E8D5A3;
   --white:      #FFFFFF;
   --text-muted: #7A7468;
+  --sage:       #4A5E3A;
 
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body:    'DM Sans', sans-serif;
@@ -20,7 +21,6 @@
   --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* ---- Reset ---- */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -46,7 +46,7 @@ body {
   align-items: center;
   padding: 0 48px;
   height: 72px;
-  background: var(--charcoal); /* ← negro sólido siempre */
+  background: var(--charcoal);
   position: fixed;
   top: 0;
   left: 0;
@@ -92,6 +92,7 @@ body {
 
 .nav-left a:hover { color: var(--gold-light); }
 .nav-left a:hover::after { width: 100%; }
+.nav-left a.active { color: var(--gold); }
 
 .logo {
   font-family: var(--font-display);
@@ -125,52 +126,22 @@ body {
   transform: scale(1.15);
 }
 
-/* ============================================
-   HEADER IMAGE — NUEVO DROP
-============================================ */
-
-.drop-hero {
-  position: relative;
-  width: 100%;
-  height: 340px;
-  overflow: hidden;
-}
-
-.drop-hero img.header-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: brightness(0.55);
-}
-
-.drop-hero-content {
+.cart-badge {
   position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 48px;
-  text-align: center;
-}
-
-.drop-hero-content .section-label {
-  font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 12px;
-}
-
-.drop-hero-content h1 {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 5vw, 52px);
-  font-weight: 300;
-  font-style: italic;
+  top: -6px;
+  right: -6px;
+  background: var(--gold);
   color: var(--white);
-  letter-spacing: 2px;
+  font-size: 10px;
+  font-family: var(--font-body);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 /* ============================================
@@ -180,6 +151,7 @@ body {
 .drop-section {
   padding: 72px 5%;
   background: var(--cream);
+  margin-top: 72px;
 }
 
 .drop-section-header {
@@ -219,13 +191,12 @@ body {
   cursor: pointer;
 }
 
-.product-card a {
+.card-link {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-/* Contenedor imagen */
 .img-container {
   position: relative;
   overflow: hidden;
@@ -247,7 +218,6 @@ body {
   filter: brightness(0.88);
 }
 
-/* Overlay hover con "Ver producto" */
 .card-overlay {
   position: absolute;
   inset: 0;
@@ -274,7 +244,6 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* Badge VENDIDO */
 .banner-vendido {
   position: absolute;
   top: 14px;
@@ -290,7 +259,6 @@ body {
   z-index: 5;
 }
 
-/* Info debajo de la imagen */
 .product-card h3 {
   font-family: var(--font-display);
   font-size: 17px;
@@ -307,26 +275,54 @@ body {
   font-size: 12px;
   letter-spacing: 1px;
   color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.product-card .talla {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Botón añadir al carrito */
+.btn-add-cart {
+  width: 100%;
+  margin-top: 4px;
+  padding: 11px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--charcoal);
+  color: var(--white);
+  border: 1px solid var(--charcoal);
+  cursor: pointer;
+  transition: all var(--transition);
+  border-radius: 0;
+}
+
+.btn-add-cart:hover:not(.in-cart) {
+  background: transparent;
+  color: var(--charcoal);
+}
+
+.btn-add-cart.in-cart {
+  background: transparent;
+  color: var(--gold);
+  border-color: var(--gold);
+  cursor: default;
 }
 
 /* ============================================
    PÁGINA PRODUCTO — product-detail
 ============================================ */
 
-.page-product body,
 body.page-product {
   background: var(--white);
 }
 
-.page-product .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 0 48px;
-  height: 72px;
-}
-
-/* Grid principal */
 .page-product .product-detail {
   display: grid;
   grid-template-columns: 60% 40%;
@@ -335,7 +331,6 @@ body.page-product {
   padding-top: 72px;
 }
 
-/* Slider imágenes */
 .page-product .detail-img {
   position: relative;
   width: 100%;
@@ -353,9 +348,7 @@ body.page-product {
   scrollbar-width: none;
 }
 
-.page-product .slider::-webkit-scrollbar {
-  display: none;
-}
+.page-product .slider::-webkit-scrollbar { display: none; }
 
 .page-product .slider img {
   flex: 0 0 100%;
@@ -365,7 +358,6 @@ body.page-product {
   scroll-snap-align: start;
 }
 
-/* Dots indicadores */
 .slider-dots {
   position: absolute;
   bottom: 20px;
@@ -390,7 +382,6 @@ body.page-product {
   transform: scale(1.3);
 }
 
-/* Columna info derecha */
 .page-product .detail-info {
   position: sticky;
   top: 72px;
@@ -400,16 +391,12 @@ body.page-product {
   padding: 56px 48px;
   display: flex;
   flex-direction: column;
-  gap: 0;
   scrollbar-width: none;
   border-left: 1px solid var(--cream-dark);
 }
 
-.page-product .detail-info::-webkit-scrollbar {
-  display: none;
-}
+.page-product .detail-info::-webkit-scrollbar { display: none; }
 
-/* Etiqueta superior */
 .detail-label {
   font-family: var(--font-body);
   font-size: 10px;
@@ -429,7 +416,6 @@ body.page-product {
   margin-bottom: 20px;
 }
 
-/* Línea divisora dorada */
 .detail-divider {
   width: 40px;
   height: 1px;
@@ -451,11 +437,10 @@ body.page-product {
   font-size: 11px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--sage, #4A5E3A);
+  color: var(--sage);
   margin-bottom: 32px;
 }
 
-/* Talla / detalles */
 .detail-meta {
   margin-bottom: 36px;
 }
@@ -472,7 +457,6 @@ body.page-product {
   font-weight: 500;
 }
 
-/* Botones */
 .page-product .btn-cart,
 .page-product .btn-buy {
   width: 100%;
@@ -510,7 +494,6 @@ body.page-product {
   color: var(--white);
 }
 
-/* Nota envío */
 .detail-shipping {
   margin-top: 24px;
   font-size: 11px;
@@ -556,9 +539,7 @@ body.page-product {
     height: 60px;
   }
 
-  .nav-left {
-    display: none;
-  }
+  .nav-left { display: none; }
 
   .logo {
     font-size: 18px;
@@ -566,16 +547,13 @@ body.page-product {
   }
 
   .drop-section {
-    padding: 56px 4%;
+    padding: 48px 4%;
+    margin-top: 60px;
   }
 
   .drop-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 28px 16px;
-  }
-
-  .drop-hero {
-    height: 260px;
   }
 }
 

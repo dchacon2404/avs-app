@@ -207,21 +207,28 @@ body {
   color: var(--charcoal);
 }
 
+/* Botón eliminar */
 .remove-btn {
   cursor: pointer;
   font-size: 16px;
-  color: var(--cream-dark);
-  border: none;
+  color: var(--text-muted);
+  border: 1px solid transparent;
   background: none;
-  padding: 4px;
+  padding: 6px;
   margin-left: 8px;
-  transition: color var(--transition);
-  filter: none;
+  transition: color var(--transition), transform var(--transition), border-color var(--transition);
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .remove-btn:hover {
   color: var(--charcoal);
+  border-color: var(--cream-dark);
+  transform: scale(1.1);
 }
 
 /* Carrito vacío */
