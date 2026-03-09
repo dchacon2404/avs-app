@@ -181,7 +181,7 @@
 
     console.log("📦 Enviando pedido:", cliente, productosTexto, total);
 
-    const templateParamsCliente = {
+    const templateParams = {
       nombre: cliente.nombre,
       apellidos: cliente.apellidos,
       telefono: cliente.telefono,
@@ -191,45 +191,37 @@
       deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
     };
 
-    const templateParamsEmpresa = {
-      cliente_nombre: cliente.nombre,
-      cliente_apellidos: cliente.apellidos,
-      telefono: cliente.telefono,
-      email_cliente: cliente.email,
-      productos: productosTexto,
-      total: total.toLocaleString(),
-      deliveryType: deliveryType === "pickup" ? "Recolectar" : "Envío a domicilio"
-    };
-
     // --- Correo al cliente ---
-    emailjs.send("service_olesnyd", "template_wz6kcm9", templateParamsCliente)
+    emailjs.send("service_olesnyd", "template_wz6kcm9", templateParams)
       .then(res => console.log("✅ Correo cliente enviado:", res))
       .catch(err => console.error("❌ Error correo cliente:", err));
 
     // --- Correo a tu novia ---
-    emailjs.send("service_olesnyd", "template_ycupd5q", templateParamsEmpresa)
+    emailjs.send("service_olesnyd", "template_ycupd5q", templateParams)
       .then(res => console.log("✅ Correo novia enviado:", res))
       .catch(err => console.error("❌ Error correo novia:", err));
 
     // 🔥 MARCAR PRODUCTOS COMO VENDIDOS
-    for (const item of cart) {
-      if (item.id) {
-        try {
-          const response = await fetch(`https://avs-app.onrender.com/api/productos/${item.id}/vender`, {
-            method: "PUT"
-          });
-          const data = await response.json();
-          console.log("✅ Producto marcado como vendido:", data);
-        } catch (error) {
-          console.error("❌ Error marcando producto como vendido:", error);
-        }
-      }
+for (const item of cart) {
+  if (item.id) {
+    try {
+      const response = await fetch(`https://avs-app.onrender.com/api/productos/${item.id}/vender`, {
+        method: "PUT"
+      });
+
+      const data = await response.json();
+      console.log("✅ Producto marcado como vendido:", data);
+    } catch (error) {
+      console.error("❌ Error marcando producto como vendido:", error);
     }
+  }
+}
+
 
     localStorage.removeItem("cart");
     localStorage.removeItem("directBuy");
     document.getElementById("success-popup").style.display = "flex";
   });
-  </script>
+</script>
 </body>
 </html>
