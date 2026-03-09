@@ -340,28 +340,12 @@ body {
   border-radius: 0;
   transition: all var(--transition);
   margin-top: auto;
-  position: relative;
-  overflow: hidden;
-}
-
-.checkout-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--transition);
-  z-index: 0;
 }
 
 .checkout-btn:hover {
+  background: transparent;
   border-color: var(--gold);
-  color: var(--charcoal);
-}
-
-.checkout-btn:hover::before {
-  transform: scaleX(1);
+  color: var(--gold);
 }
 
 .checkout-btn span {

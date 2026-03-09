@@ -46,19 +46,19 @@ body {
   align-items: center;
   padding: 0 48px;
   height: 72px;
-  background: transparent;
+  background: var(--charcoal); /* ← negro sólido siempre */
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
   transition: background var(--transition), backdrop-filter var(--transition);
 }
 
 .navbar.scrolled {
-  background: rgba(28, 28, 26, 0.78);
+  background: rgba(28, 28, 26, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
 }
 
 .nav-left {
