@@ -561,7 +561,6 @@ video {
   background: var(--gold);
   margin: 32px 0;
 }
-
 /* ============================================
    FOOTER
 ============================================ */
@@ -569,93 +568,45 @@ video {
 .custom-footer {
   background: var(--charcoal);
   color: var(--cream);
-  padding: 60px 48px 32px;
+  padding: 28px 48px;
   border-top: 1px solid rgba(201, 168, 76, 0.2);
-}
-
-.footer-top {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
-  gap: 40px;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .footer-logo-area .logo-text {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 14px;
   font-weight: 300;
-  letter-spacing: 8px;
+  letter-spacing: 6px;
   color: var(--white);
   text-transform: uppercase;
   display: block;
-  margin-bottom: 8px;
-}
-
-.footer-logo-area p {
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.footer-links {
-  display: flex;
-  gap: 48px;
-}
-
-.footer-links-col h4 {
-  font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 20px;
-}
-
-.footer-links-col a {
-  display: block;
-  font-size: 13px;
-  color: rgba(247,243,237,0.55);
-  text-decoration: none;
-  margin-bottom: 10px;
-  transition: color var(--transition);
-}
-
-.footer-links-col a:hover {
-  color: var(--cream);
+  text-align: center;
 }
 
 .footer-icons {
   display: flex;
   flex-direction: row;
-  gap: 20px;
-  justify-content: flex-start;
+  gap: 24px;
+  justify-content: center;
   align-items: center;
-  margin-top: 0;
 }
 
 .footer-icons a {
   display: flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
-  color: rgba(247,243,237,0.6);
-  font-size: 12px;
-  letter-spacing: 1px;
-  transition: color var(--transition);
-}
-
-.footer-icons a img {
-  width: 20px;
-  height: 20px;
-  filter: invert(1) brightness(0.6);
   transition: filter var(--transition);
 }
 
-.footer-icons a:hover {
-  color: var(--gold-light);
+.footer-icons a img {
+  width: 18px;
+  height: 18px;
+  filter: invert(1) brightness(0.55);
+  transition: filter var(--transition);
 }
 
 .footer-icons a:hover img {
@@ -664,30 +615,16 @@ video {
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.06);
-  padding-top: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  padding-top: 14px;
+  width: 100%;
+  text-align: center;
 }
 
 .footer-bottom p {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   letter-spacing: 1px;
 }
-
-/* ============================================
-   NAVBAR SCROLL JS — agregar en tu HTML
-============================================ */
-/* En tu index.html antes de </body> agrega:
-<script>
-  window.addEventListener('scroll', () => {
-    document.querySelector('header').classList.toggle('scrolled', window.scrollY > 40);
-  });
-</script>
-*/
 
 /* ============================================
    RESPONSIVE
