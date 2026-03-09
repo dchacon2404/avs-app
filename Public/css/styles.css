@@ -660,7 +660,7 @@ video {
   .logo {
     position: static;
     transform: none;
-    font-size: 20px;
+    font-size: 8px;
   }
 
   .gallery {
